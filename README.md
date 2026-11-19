@@ -2,16 +2,17 @@
 
 Multi-tenant education management SaaS for Bangladesh (general schools, colleges, Alia / Qawmi / Hifz Madrasas).
 
-**Phase 01 scope:** project initialization and premium design system only. No tenant engine, super-admin SaaS console, or student modules yet.
+**Phase 02 scope:** SaaS Super Admin & Tenant Engine — registration, host resolution, isolation, institution profiles, domains, plans/features, module registry, usage stubs. Full RBAC builder and academic modules are later phases.
 
 ## Stack
 
 | Layer | Choice |
 |-------|--------|
 | Runtime | PHP 8.3+ |
-| Framework | Laravel 13 (modular monolith skeleton) |
+| Framework | Laravel 13 (modular monolith) |
 | UI | Blade + Livewire 4 + Alpine.js + Tailwind CSS 4 |
 | Icons | Lucide (`mallardduck/blade-lucide-icons`) |
+| Authz | Spatie Permission (teams/`tenant_id` enabled; minimal roles in Phase 02) |
 | DB | **MySQL 8+** (primary) · **SQLite** OK for local / CI smoke |
 | Tests | Pest + PHPUnit |
 | Locale | `en` / `bn` / `ar` (RTL when `ar`) |
@@ -47,7 +48,7 @@ DB_PASSWORD=secret
 ```
 
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
 
 ### Database — SQLite (local / CI smoke)
@@ -59,7 +60,7 @@ DB_DATABASE=database/database.sqlite
 
 ```bash
 touch database/database.sqlite
-php artisan migrate
+php artisan migrate --seed
 ```
 
 ### Front-end assets
@@ -77,46 +78,39 @@ npm run dev
 php artisan serve
 ```
 
-Open `http://127.0.0.1:8000` — redirects to the dashboard shell.
+Open `http://127.0.0.1:8000` — redirects to login.
 
-## Phase 01 routes
+**Seeded super admin:** `superadmin@sme.local` / `password`
+
+## Phase 02 routes
 
 | Path | Purpose |
 |------|---------|
-| `/dashboard` | Premium layout shell (sidebar, topbar, dark/light, locale) |
-| `/ui/kitchen-sink` | Reusable UI components demo (Livewire) |
+| `/login` · `/register` | Auth + tenant self-registration |
+| `/platform/*` | Super Admin SaaS console |
+| `/app/*` | Tenant institution admin |
+| `/ui/shell-preview` · `/ui/kitchen-sink` | Design-system demos |
 | `/locale/{en\|bn\|ar}` | Switch locale (session) |
 
-## Modular skeleton
+### Tenancy hosts
 
-Placeholder module directories under `modules/` (Tenancy, Identity, Academics, …, Platform) and `app/Core/` for shared kernel code. Domain logic arrives in later phases.
+- Subdomain: `{slug}.{TENANCY_BASE_DOMAIN}` (default `localhost`)
+- Custom domain: stored on `tenant_domains` (Enterprise feature; DNS verify stubbed)
+- Platform: `/platform` path (and optional `admin.{base}`)
+- Local fallback: on central hosts, authenticated tenant users bind via `tenant_id` when `TENANCY_USER_FALLBACK=true`
 
 ## Design system
 
-- Primary Indigo `#4F46E5`, secondary Blue `#2563EB`, canvas Slate `#F8FAFC`
-- Status: Emerald / Amber / Rose
-- Fonts: Inter + Noto Sans Bengali + Noto Sans Arabic
-- Dark mode via Alpine store + `class="dark"` on `<html>`
-- Components: `resources/views/components/ui/*`
+Premium Indigo / Blue / Slate gradients from Phase 01 are preserved (sidebar, topbar, KPIs, surfaces).
 
 ## Tests
 
 ```bash
 php artisan test
-# or
-./vendor/bin/pest
 ```
 
-CI-friendly default in `phpunit.xml` uses in-memory SQLite.
-
-## What is intentionally not in Phase 01
-
-- Tenant resolution / `tenant_id` scopes
-- Auth, RBAC, Spatie Permission
-- Super-admin SaaS panel
-- Student / academic / fee modules
-- Production deployment
+Isolation tests create two tenants and assert scoped queries + host IDOR denial.
 
 ## License
 
-MIT (OSS license for public release may be revisited before launch — see project ADRs).
+MIT (exact OSS packaging TBD before public release).

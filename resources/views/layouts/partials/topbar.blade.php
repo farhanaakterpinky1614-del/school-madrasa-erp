@@ -1,6 +1,14 @@
 @php
     use App\Core\Support\Locale;
+    use App\Core\Tenancy\CurrentTenant;
     $locales = Locale::all();
+    $user = auth()->user();
+    $tenant = app(CurrentTenant::class)->get();
+    $title = $tenant?->name
+        ?? ($user?->is_platform_admin ? __('ui.platform_console') : __('ui.demo_tenant'));
+    $subtitle = $user?->is_platform_admin
+        ? __('ui.super_admin')
+        : ($tenant?->slug ? $tenant->slug.'.'.config('sme.tenancy.base_domain') : __('ui.phase_02_engine'));
 @endphp
 
 <header class="sme-topbar-shell sticky top-0 z-20">
@@ -16,8 +24,8 @@
         </button>
 
         <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-semibold tracking-tight">{{ __('ui.demo_tenant') }}</p>
-            <p class="truncate text-xs text-muted">{{ __('ui.phase_01_shell') }}</p>
+            <p class="truncate text-sm font-semibold tracking-tight">{{ $title }}</p>
+            <p class="truncate text-xs text-muted">{{ $subtitle }}</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -66,13 +74,25 @@
                 <x-lucide-moon class="hidden h-4 w-4 dark:block" />
             </button>
 
-            <div class="hidden items-center gap-2 rounded-xl border border-sme bg-surface/90 px-2.5 py-1.5 shadow-sme-soft sm:flex">
-                <span class="sme-brand-mark flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold text-white">AD</span>
-                <div class="leading-tight">
-                    <p class="text-xs font-semibold">{{ __('ui.demo_user') }}</p>
-                    <p class="text-[11px] text-muted">{{ __('ui.demo_role') }}</p>
+            @if ($user)
+                <div class="hidden items-center gap-2 rounded-xl border border-sme bg-surface/90 px-2.5 py-1.5 shadow-sme-soft sm:flex">
+                    <span class="sme-brand-mark flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-semibold text-white">
+                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                    </span>
+                    <div class="leading-tight">
+                        <p class="text-xs font-semibold">{{ $user->name }}</p>
+                        <p class="text-[11px] text-muted">
+                            {{ $user->is_platform_admin ? __('ui.super_admin') : __('ui.tenant_admin') }}
+                        </p>
+                    </div>
                 </div>
-            </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-sme bg-surface/90 p-2 text-muted shadow-sme-soft transition hover:text-danger-600" aria-label="{{ __('ui.sign_out') }}">
+                        <x-lucide-log-out class="h-4 w-4" />
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 </header>
