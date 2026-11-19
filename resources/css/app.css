@@ -1,0 +1,386 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/dist/livewire.js';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
+
+@theme {
+    --font-sans: 'Inter', 'Noto Sans Bengali', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+
+    --color-primary-50: #eef2ff;
+    --color-primary-100: #e0e7ff;
+    --color-primary-200: #c7d2fe;
+    --color-primary-300: #a5b4fc;
+    --color-primary-400: #818cf8;
+    --color-primary-500: #6366f1;
+    --color-primary-600: #4f46e5;
+    --color-primary-700: #4338ca;
+    --color-primary-800: #3730a3;
+    --color-primary-900: #312e81;
+    --color-primary-950: #1e1b4b;
+    --color-primary: #4f46e5;
+
+    --color-secondary-50: #eff6ff;
+    --color-secondary-100: #dbeafe;
+    --color-secondary-200: #bfdbfe;
+    --color-secondary-300: #93c5fd;
+    --color-secondary-400: #60a5fa;
+    --color-secondary-500: #3b82f6;
+    --color-secondary-600: #2563eb;
+    --color-secondary-700: #1d4ed8;
+    --color-secondary-800: #1e40af;
+    --color-secondary-900: #1e3a8a;
+    --color-secondary: #2563eb;
+
+    --color-success-50: #ecfdf5;
+    --color-success-100: #d1fae5;
+    --color-success-500: #10b981;
+    --color-success-600: #059669;
+    --color-success-700: #047857;
+    --color-success: #059669;
+
+    --color-warning-50: #fffbeb;
+    --color-warning-100: #fef3c7;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+    --color-warning: #d97706;
+
+    --color-danger-50: #fff1f2;
+    --color-danger-100: #ffe4e6;
+    --color-danger-500: #f43f5e;
+    --color-danger-600: #e11d48;
+    --color-danger-700: #be123c;
+    --color-danger: #e11d48;
+
+    --color-surface: #ffffff;
+    --color-canvas: #f1f5f9;
+}
+
+@layer base {
+    :root {
+        --sme-primary: #4f46e5;
+        --sme-primary-fg: #ffffff;
+        --sme-secondary: #2563eb;
+        --sme-bg: #f1f5f9;
+        --sme-surface: rgba(255, 255, 255, 0.86);
+        --sme-surface-solid: #ffffff;
+        --sme-border: rgba(148, 163, 184, 0.28);
+        --sme-text: #0f172a;
+        --sme-muted: #64748b;
+        --sme-success: #059669;
+        --sme-warning: #d97706;
+        --sme-danger: #e11d48;
+        --sme-sidebar-fg: #e2e8f0;
+        --sme-sidebar-muted: #94a3b8;
+        --sme-ring: #4f46e5;
+
+        /* Multi-stop gradients — Indigo / Blue / Slate (no neon) */
+        --sme-grad-canvas:
+            radial-gradient(1200px 600px at 0% -10%, rgba(79, 70, 229, 0.12), transparent 55%),
+            radial-gradient(900px 500px at 100% 0%, rgba(37, 99, 235, 0.10), transparent 50%),
+            radial-gradient(800px 400px at 50% 100%, rgba(148, 163, 184, 0.18), transparent 60%),
+            linear-gradient(165deg, #f8fafc 0%, #eef2ff 42%, #f1f5f9 100%);
+
+        --sme-grad-sidebar:
+            linear-gradient(185deg, #1e1b4b 0%, #0f172a 42%, #172554 78%, #0f172a 100%);
+
+        --sme-grad-sidebar-active:
+            linear-gradient(90deg, rgba(79, 70, 229, 0.45) 0%, rgba(37, 99, 235, 0.22) 100%);
+
+        --sme-grad-topbar:
+            linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(238, 242, 255, 0.88) 55%, rgba(239, 246, 255, 0.90) 100%);
+
+        --sme-grad-topbar-accent:
+            linear-gradient(90deg, #4f46e5 0%, #2563eb 55%, #6366f1 100%);
+
+        --sme-grad-primary:
+            linear-gradient(135deg, #4338ca 0%, #4f46e5 45%, #2563eb 100%);
+
+        --sme-grad-primary-hover:
+            linear-gradient(135deg, #3730a3 0%, #4338ca 40%, #1d4ed8 100%);
+
+        --sme-grad-secondary:
+            linear-gradient(135deg, #1d4ed8 0%, #2563eb 55%, #3b82f6 100%);
+
+        --sme-grad-brand-mark:
+            linear-gradient(145deg, #6366f1 0%, #4f46e5 50%, #2563eb 100%);
+
+        --sme-grad-kpi-indigo:
+            linear-gradient(145deg, rgba(79, 70, 229, 0.14), rgba(37, 99, 235, 0.06));
+
+        --sme-grad-kpi-emerald:
+            linear-gradient(145deg, rgba(5, 150, 105, 0.14), rgba(16, 185, 129, 0.05));
+
+        --sme-grad-kpi-amber:
+            linear-gradient(145deg, rgba(217, 119, 6, 0.14), rgba(245, 158, 11, 0.05));
+
+        --sme-grad-panel-header:
+            linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(255, 255, 255, 0.55) 100%);
+
+        --sme-shadow-surface:
+            0 1px 1px rgba(15, 23, 42, 0.03),
+            0 8px 24px rgba(15, 23, 42, 0.05),
+            0 0 0 1px rgba(148, 163, 184, 0.18);
+
+        --sme-shadow-elevated:
+            0 4px 6px rgba(15, 23, 42, 0.04),
+            0 16px 40px rgba(15, 23, 42, 0.08),
+            0 0 0 1px rgba(148, 163, 184, 0.16);
+
+        --sme-shadow-primary:
+            0 1px 2px rgba(67, 56, 202, 0.18),
+            0 8px 20px rgba(79, 70, 229, 0.28);
+    }
+
+    .dark {
+        --sme-primary: #818cf8;
+        --sme-primary-fg: #0f172a;
+        --sme-secondary: #60a5fa;
+        --sme-bg: #020617;
+        --sme-surface: rgba(15, 23, 42, 0.78);
+        --sme-surface-solid: #0f172a;
+        --sme-border: rgba(51, 65, 85, 0.65);
+        --sme-text: #f1f5f9;
+        --sme-muted: #94a3b8;
+        --sme-success: #34d399;
+        --sme-warning: #fbbf24;
+        --sme-danger: #fb7185;
+        --sme-sidebar-fg: #e2e8f0;
+        --sme-sidebar-muted: #64748b;
+        --sme-ring: #818cf8;
+
+        --sme-grad-canvas:
+            radial-gradient(1000px 520px at 0% 0%, rgba(79, 70, 229, 0.22), transparent 55%),
+            radial-gradient(900px 480px at 100% 10%, rgba(37, 99, 235, 0.16), transparent 50%),
+            radial-gradient(700px 380px at 70% 100%, rgba(30, 41, 59, 0.55), transparent 55%),
+            linear-gradient(165deg, #020617 0%, #0b1224 48%, #020617 100%);
+
+        --sme-grad-sidebar:
+            linear-gradient(185deg, #0b1024 0%, #020617 40%, #111c3a 78%, #020617 100%);
+
+        --sme-grad-sidebar-active:
+            linear-gradient(90deg, rgba(99, 102, 241, 0.35) 0%, rgba(37, 99, 235, 0.18) 100%);
+
+        --sme-grad-topbar:
+            linear-gradient(90deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 27, 75, 0.55) 50%, rgba(15, 23, 42, 0.92) 100%);
+
+        --sme-grad-topbar-accent:
+            linear-gradient(90deg, #6366f1 0%, #3b82f6 55%, #818cf8 100%);
+
+        --sme-grad-primary:
+            linear-gradient(135deg, #6366f1 0%, #4f46e5 48%, #3b82f6 100%);
+
+        --sme-grad-primary-hover:
+            linear-gradient(135deg, #818cf8 0%, #6366f1 40%, #2563eb 100%);
+
+        --sme-grad-secondary:
+            linear-gradient(135deg, #3b82f6 0%, #2563eb 55%, #60a5fa 100%);
+
+        --sme-grad-brand-mark:
+            linear-gradient(145deg, #818cf8 0%, #6366f1 45%, #3b82f6 100%);
+
+        --sme-grad-kpi-indigo:
+            linear-gradient(145deg, rgba(99, 102, 241, 0.22), rgba(37, 99, 235, 0.08));
+
+        --sme-grad-kpi-emerald:
+            linear-gradient(145deg, rgba(52, 211, 153, 0.16), rgba(16, 185, 129, 0.05));
+
+        --sme-grad-kpi-amber:
+            linear-gradient(145deg, rgba(251, 191, 36, 0.16), rgba(245, 158, 11, 0.05));
+
+        --sme-grad-panel-header:
+            linear-gradient(180deg, rgba(30, 41, 59, 0.65) 0%, rgba(15, 23, 42, 0.2) 100%);
+
+        --sme-shadow-surface:
+            0 1px 1px rgba(0, 0, 0, 0.25),
+            0 10px 28px rgba(0, 0, 0, 0.28),
+            0 0 0 1px rgba(71, 85, 105, 0.45);
+
+        --sme-shadow-elevated:
+            0 8px 28px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(71, 85, 105, 0.5);
+
+        --sme-shadow-primary:
+            0 1px 2px rgba(0, 0, 0, 0.35),
+            0 10px 24px rgba(79, 70, 229, 0.28);
+    }
+
+    html {
+        font-family: var(--font-sans);
+        color: var(--sme-text);
+        background-color: var(--sme-bg);
+    }
+
+    body {
+        @apply antialiased text-sm sm:text-[15px] leading-relaxed;
+        color: var(--sme-text);
+        background: var(--sme-grad-canvas);
+        background-attachment: fixed;
+        min-height: 100%;
+    }
+
+    *:focus-visible {
+        outline: 2px solid var(--sme-ring);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    .sme-surface {
+        background: var(--sme-surface);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: var(--sme-shadow-surface);
+        border: 1px solid var(--sme-border);
+    }
+
+    .sme-surface-solid {
+        background: var(--sme-surface-solid);
+        box-shadow: var(--sme-shadow-surface);
+        border: 1px solid var(--sme-border);
+    }
+
+    .sme-panel-header {
+        background: var(--sme-grad-panel-header);
+        border-bottom: 1px solid var(--sme-border);
+    }
+
+    .sme-btn-primary {
+        background-image: var(--sme-grad-primary);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: var(--sme-shadow-primary);
+    }
+
+    .sme-btn-primary:hover:not(:disabled) {
+        background-image: var(--sme-grad-primary-hover);
+    }
+
+    .sme-btn-secondary {
+        background-image: var(--sme-grad-secondary);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .sme-sidebar-shell {
+        background: var(--sme-grad-sidebar);
+        box-shadow:
+            inset -1px 0 0 rgba(255, 255, 255, 0.06),
+            8px 0 32px rgba(15, 23, 42, 0.18);
+    }
+
+    .sme-topbar-shell {
+        background: var(--sme-grad-topbar);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--sme-border);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .dark .sme-topbar-shell {
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .sme-topbar-accent {
+        height: 2px;
+        background: var(--sme-grad-topbar-accent);
+    }
+
+    .sme-brand-mark {
+        background-image: var(--sme-grad-brand-mark);
+        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+
+    .sme-nav-active {
+        background: var(--sme-grad-sidebar-active);
+        box-shadow: inset 3px 0 0 #818cf8;
+    }
+
+    [dir='rtl'] .sme-nav-active {
+        box-shadow: inset -3px 0 0 #818cf8;
+    }
+
+    .sme-kpi {
+        position: relative;
+        overflow: hidden;
+        border-radius: 0.85rem;
+        border: 1px solid var(--sme-border);
+        box-shadow: var(--sme-shadow-surface);
+    }
+
+    .sme-kpi::before {
+        content: '';
+        position: absolute;
+        inset-inline-start: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--sme-grad-topbar-accent);
+    }
+
+    .sme-kpi-indigo {
+        background: var(--sme-grad-kpi-indigo);
+    }
+
+    .sme-kpi-emerald {
+        background: var(--sme-grad-kpi-emerald);
+    }
+
+    .sme-kpi-amber {
+        background: var(--sme-grad-kpi-amber);
+    }
+
+    .sme-kpi-amber::before {
+        background: linear-gradient(180deg, #d97706, #f59e0b);
+    }
+
+    .sme-kpi-emerald::before {
+        background: linear-gradient(180deg, #047857, #10b981);
+    }
+}
+
+@layer utilities {
+    .bg-canvas {
+        background: var(--sme-grad-canvas);
+    }
+
+    .bg-surface {
+        background-color: var(--sme-surface-solid);
+    }
+
+    .bg-sidebar {
+        background: var(--sme-grad-sidebar);
+    }
+
+    .text-sidebar {
+        color: var(--sme-sidebar-fg);
+    }
+
+    .text-sidebar-muted {
+        color: var(--sme-sidebar-muted);
+    }
+
+    .border-sme {
+        border-color: var(--sme-border);
+    }
+
+    .text-muted {
+        color: var(--sme-muted);
+    }
+
+    .shadow-sme {
+        box-shadow: var(--sme-shadow-elevated);
+    }
+
+    .shadow-sme-soft {
+        box-shadow: var(--sme-shadow-surface);
+    }
+
+    .transition-sidebar {
+        transition: width 200ms ease, margin 200ms ease, padding 200ms ease, transform 200ms ease;
+    }
+}
