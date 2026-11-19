@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/dist/livewire.js';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
+
+@theme {
+    --font-sans: 'Inter', 'Noto Sans Bengali', 'Noto Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+
+    --color-primary-50: #eef2ff;
+    --color-primary-100: #e0e7ff;
+    --color-primary-200: #c7d2fe;
+    --color-primary-300: #a5b4fc;
+    --color-primary-400: #818cf8;
+    --color-primary-500: #6366f1;
+    --color-primary-600: #4f46e5;
+    --color-primary-700: #4338ca;
+    --color-primary-800: #3730a3;
+    --color-primary-900: #312e81;
+    --color-primary-950: #1e1b4b;
+    --color-primary: #4f46e5;
+
+    --color-secondary-50: #eff6ff;
+    --color-secondary-100: #dbeafe;
+    --color-secondary-200: #bfdbfe;
+    --color-secondary-300: #93c5fd;
+    --color-secondary-400: #60a5fa;
+    --color-secondary-500: #3b82f6;
+    --color-secondary-600: #2563eb;
+    --color-secondary-700: #1d4ed8;
+    --color-secondary-800: #1e40af;
+    --color-secondary-900: #1e3a8a;
+    --color-secondary: #2563eb;
+
+    --color-success-50: #ecfdf5;
+    --color-success-100: #d1fae5;
+    --color-success-500: #10b981;
+    --color-success-600: #059669;
+    --color-success-700: #047857;
+    --color-success: #059669;
+
+    --color-warning-50: #fffbeb;
+    --color-warning-100: #fef3c7;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+    --color-warning: #d97706;
+
+    --color-danger-50: #fff1f2;
+    --color-danger-100: #ffe4e6;
+    --color-danger-500: #f43f5e;
+    --color-danger-600: #e11d48;
+    --color-danger-700: #be123c;
+    --color-danger: #e11d48;
+
+    --color-surface: #ffffff;
+    --color-canvas: #f8fafc;
+}
+
+@layer base {
+    :root {
+        --sme-primary: #4f46e5;
+        --sme-primary-fg: #ffffff;
+        --sme-secondary: #2563eb;
+        --sme-bg: #f8fafc;
+        --sme-surface: #ffffff;
+        --sme-border: #e2e8f0;
+        --sme-text: #0f172a;
+        --sme-muted: #64748b;
+        --sme-success: #059669;
+        --sme-warning: #d97706;
+        --sme-danger: #e11d48;
+        --sme-sidebar: #0f172a;
+        --sme-sidebar-fg: #e2e8f0;
+        --sme-sidebar-muted: #94a3b8;
+        --sme-topbar: #ffffff;
+        --sme-ring: #4f46e5;
+    }
+
+    .dark {
+        --sme-primary: #818cf8;
+        --sme-primary-fg: #0f172a;
+        --sme-secondary: #60a5fa;
+        --sme-bg: #020617;
+        --sme-surface: #0f172a;
+        --sme-border: #1e293b;
+        --sme-text: #f1f5f9;
+        --sme-muted: #94a3b8;
+        --sme-success: #34d399;
+        --sme-warning: #fbbf24;
+        --sme-danger: #fb7185;
+        --sme-sidebar: #020617;
+        --sme-sidebar-fg: #e2e8f0;
+        --sme-sidebar-muted: #64748b;
+        --sme-topbar: #0f172a;
+        --sme-ring: #818cf8;
+    }
+
+    html {
+        font-family: var(--font-sans);
+        color: var(--sme-text);
+        background-color: var(--sme-bg);
+    }
+
+    body {
+        @apply antialiased text-sm sm:text-[15px] leading-relaxed;
+        background-color: var(--sme-bg);
+        color: var(--sme-text);
+    }
+
+    *:focus-visible {
+        outline: 2px solid var(--sme-ring);
+        outline-offset: 2px;
+    }
+}
+
+@layer utilities {
+    .bg-canvas {
+        background-color: var(--sme-bg);
+    }
+
+    .bg-surface {
+        background-color: var(--sme-surface);
+    }
+
+    .bg-sidebar {
+        background-color: var(--sme-sidebar);
+    }
+
+    .text-sidebar {
+        color: var(--sme-sidebar-fg);
+    }
+
+    .text-sidebar-muted {
+        color: var(--sme-sidebar-muted);
+    }
+
+    .border-sme {
+        border-color: var(--sme-border);
+    }
+
+    .text-muted {
+        color: var(--sme-muted);
+    }
+
+    .shadow-sme {
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .transition-sidebar {
+        transition: width 200ms ease, margin 200ms ease, padding 200ms ease, transform 200ms ease;
+    }
+}
