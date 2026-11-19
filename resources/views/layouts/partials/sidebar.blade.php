@@ -1,8 +1,37 @@
 @php
-    $nav = [
-        ['route' => 'dashboard', 'label' => __('ui.nav.dashboard'), 'icon' => 'layout-dashboard'],
-        ['route' => 'ui.kitchen-sink', 'label' => __('ui.nav.components'), 'icon' => 'component'],
-    ];
+    $isPlatform = request()->routeIs('platform.*');
+    $isTenant = request()->routeIs('tenant.*');
+
+    if ($isPlatform) {
+        $nav = [
+            ['route' => 'platform.dashboard', 'label' => __('ui.nav.dashboard'), 'icon' => 'layout-dashboard', 'match' => 'platform.dashboard'],
+            ['route' => 'platform.tenants.index', 'label' => __('ui.nav.tenants'), 'icon' => 'building-2', 'match' => 'platform.tenants.*'],
+            ['route' => 'platform.institutions.index', 'label' => __('ui.nav.institutions'), 'icon' => 'school', 'match' => 'platform.institutions.*'],
+            ['route' => 'platform.plans.index', 'label' => __('ui.nav.plans'), 'icon' => 'badge-dollar-sign', 'match' => 'platform.plans.*'],
+            ['route' => 'platform.modules.index', 'label' => __('ui.nav.modules'), 'icon' => 'blocks', 'match' => 'platform.modules.*'],
+            ['route' => 'platform.usage.index', 'label' => __('ui.nav.usage'), 'icon' => 'gauge', 'match' => 'platform.usage.*'],
+        ];
+        $navTitle = __('ui.platform_nav');
+        $brandSub = __('ui.super_admin');
+    } elseif ($isTenant) {
+        $nav = [
+            ['route' => 'tenant.dashboard', 'label' => __('ui.nav.dashboard'), 'icon' => 'layout-dashboard', 'match' => 'tenant.dashboard'],
+            ['route' => 'tenant.institution.edit', 'label' => __('ui.nav.institution'), 'icon' => 'school', 'match' => 'tenant.institution.*'],
+            ['route' => 'tenant.domains.index', 'label' => __('ui.nav.domains'), 'icon' => 'globe', 'match' => 'tenant.domains.*'],
+            ['route' => 'tenant.subscription.show', 'label' => __('ui.nav.subscription'), 'icon' => 'credit-card', 'match' => 'tenant.subscription.*'],
+            ['route' => 'tenant.modules.index', 'label' => __('ui.nav.modules'), 'icon' => 'blocks', 'match' => 'tenant.modules.*'],
+            ['route' => 'tenant.usage.index', 'label' => __('ui.nav.usage'), 'icon' => 'gauge', 'match' => 'tenant.usage.*'],
+        ];
+        $navTitle = __('ui.primary_nav');
+        $brandSub = app(\App\Core\Tenancy\CurrentTenant::class)->get()?->name ?? __('ui.tenant_admin');
+    } else {
+        $nav = [
+            ['route' => 'ui.shell-preview', 'label' => __('ui.nav.dashboard'), 'icon' => 'layout-dashboard', 'match' => 'ui.shell-preview'],
+            ['route' => 'ui.kitchen-sink', 'label' => __('ui.nav.components'), 'icon' => 'component', 'match' => 'ui.kitchen-sink'],
+        ];
+        $navTitle = __('ui.primary_nav');
+        $brandSub = __('ui.tagline');
+    }
 @endphp
 
 <aside
@@ -22,16 +51,16 @@
         </div>
         <div class="min-w-0" x-show="! $store.sidebar.collapsed || window.innerWidth < 1024">
             <p class="truncate text-sm font-semibold tracking-tight text-white">{{ __('ui.app_name') }}</p>
-            <p class="truncate text-xs text-sidebar-muted">{{ __('ui.tagline') }}</p>
+            <p class="truncate text-xs text-sidebar-muted">{{ $brandSub }}</p>
         </div>
     </div>
 
-    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="{{ __('ui.primary_nav') }}">
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="{{ $navTitle }}">
         <p
             class="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted/80"
             x-show="! $store.sidebar.collapsed || window.innerWidth < 1024"
         >
-            {{ __('ui.primary_nav') }}
+            {{ $navTitle }}
         </p>
         @foreach ($nav as $item)
             <a
@@ -39,8 +68,8 @@
                 @click="$store.sidebar.closeMobile()"
                 @class([
                     'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                    'sme-nav-active text-white' => request()->routeIs($item['route']),
-                    'text-sidebar-muted hover:bg-white/5 hover:text-white' => ! request()->routeIs($item['route']),
+                    'sme-nav-active text-white' => request()->routeIs($item['match']),
+                    'text-sidebar-muted hover:bg-white/5 hover:text-white' => ! request()->routeIs($item['match']),
                 ])
             >
                 @svg('lucide-'.$item['icon'], 'h-5 w-5 shrink-0 opacity-90')

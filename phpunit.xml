@@ -32,5 +32,9 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="TENANCY_BASE_DOMAIN" value="localhost"/>
+        <env name="TENANCY_CENTRAL_DOMAINS" value="localhost,127.0.0.1"/>
+        <env name="TENANCY_PLATFORM_HOSTS" value="admin.localhost"/>
+        <env name="TENANCY_USER_FALLBACK" value="true"/>
     </php>
 </phpunit>
