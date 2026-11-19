@@ -18,7 +18,9 @@ class PlatformAdminSeeder extends Seeder
                 'tenant_id' => null,
                 'is_platform_admin' => true,
                 'user_type' => User::TYPE_PLATFORM_ADMIN,
+                'is_active' => true,
                 'email_verified_at' => now(),
+                'password_changed_at' => now(),
             ],
         );
     }

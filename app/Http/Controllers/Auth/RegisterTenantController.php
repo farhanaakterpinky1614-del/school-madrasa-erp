@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Modules\Identity\Services\PasswordPolicy;
 use Modules\Platform\Models\Plan;
 use Modules\Tenancy\Services\TenantRegistrar;
 
@@ -20,7 +21,7 @@ class RegisterTenantController extends Controller
         ]);
     }
 
-    public function store(Request $request, TenantRegistrar $registrar): RedirectResponse
+    public function store(Request $request, TenantRegistrar $registrar, PasswordPolicy $passwordPolicy): RedirectResponse
     {
         $data = $request->validate([
             'institution_name' => ['required', 'string', 'max:255'],
@@ -29,7 +30,7 @@ class RegisterTenantController extends Controller
             'plan_code' => ['required', 'string', 'exists:plans,code'],
             'admin_name' => ['required', 'string', 'max:255'],
             'admin_email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'admin_password' => ['required', 'string', 'min:8', 'confirmed'],
+            'admin_password' => ['required', 'confirmed', $passwordPolicy->rule()],
             'phone' => ['nullable', 'string', 'max:32'],
         ]);
 

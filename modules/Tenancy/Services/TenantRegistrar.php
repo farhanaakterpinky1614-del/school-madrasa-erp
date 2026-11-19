@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Modules\Identity\Services\RoleProvisioner;
 use Modules\Platform\Models\Plan;
 use Modules\Platform\Models\TenantSubscription;
 use Modules\Platform\Services\UsageTracker;
@@ -18,6 +19,7 @@ class TenantRegistrar
     public function __construct(
         protected TenantResolver $resolver,
         protected UsageTracker $usageTracker,
+        protected RoleProvisioner $roleProvisioner,
     ) {}
 
     /**
@@ -113,8 +115,12 @@ class TenantRegistrar
                 'password' => Hash::make($data['admin_password']),
                 'is_platform_admin' => false,
                 'user_type' => User::TYPE_TENANT_ADMIN,
+                'is_active' => true,
                 'email_verified_at' => now(),
+                'password_changed_at' => now(),
             ]);
+
+            $this->roleProvisioner->provisionTenantRoles($tenant, $user);
 
             return compact('tenant', 'user', 'institution');
         });

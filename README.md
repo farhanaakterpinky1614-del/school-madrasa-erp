@@ -2,7 +2,7 @@
 
 Multi-tenant education management SaaS for Bangladesh (general schools, colleges, Alia / Qawmi / Hifz Madrasas).
 
-**Phase 02 scope:** SaaS Super Admin & Tenant Engine — registration, host resolution, isolation, institution profiles, domains, plans/features, module registry, usage stubs. Full RBAC builder and academic modules are later phases.
+**Phase 03 scope:** Authentication, RBAC & Security — Spatie teams RBAC, custom role builder, user/membership management, login history, audit logs, session revoke, password reset, rate limits. Academic modules remain later phases.
 
 ## Stack
 
@@ -12,7 +12,7 @@ Multi-tenant education management SaaS for Bangladesh (general schools, colleges
 | Framework | Laravel 13 (modular monolith) |
 | UI | Blade + Livewire 4 + Alpine.js + Tailwind CSS 4 |
 | Icons | Lucide (`mallardduck/blade-lucide-icons`) |
-| Authz | Spatie Permission (teams/`tenant_id` enabled; minimal roles in Phase 02) |
+| Authz | Spatie Permission (teams/`tenant_id`; custom role builder + policies) |
 | DB | **MySQL 8+** (primary) · **SQLite** OK for local / CI smoke |
 | Tests | Pest + PHPUnit |
 | Locale | `en` / `bn` / `ar` (RTL when `ar`) |
@@ -82,15 +82,17 @@ Open `http://127.0.0.1:8000` — redirects to login.
 
 **Seeded super admin:** `superadmin@sme.local` / `password`
 
-## Phase 02 routes
+## Phase 03 routes
 
 | Path | Purpose |
 |------|---------|
-| `/login` · `/register` | Auth + tenant self-registration |
-| `/platform/*` | Super Admin SaaS console |
-| `/app/*` | Tenant institution admin |
+| `/login` · `/register` · `/forgot-password` · `/reset-password/{token}` | Auth + password reset foundation |
+| `/platform/*` | Super Admin SaaS console (+ platform users / audit) |
+| `/app/*` | Tenant back-office (users, roles, memberships, audit, sessions, …) |
 | `/ui/shell-preview` · `/ui/kitchen-sink` | Design-system demos |
 | `/locale/{en\|bn\|ar}` | Switch locale (session) |
+
+**Seeded demo:** `superadmin@sme.local` / `password` (platform). Register an institution for tenant admin flows.
 
 ### Tenancy hosts
 

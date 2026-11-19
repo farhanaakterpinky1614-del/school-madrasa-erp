@@ -78,4 +78,14 @@ return [
         'allow_user_tenant_fallback' => (bool) env('TENANCY_USER_FALLBACK', true),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Security (Phase 03) — detailed rules live in config/identity.php
+    |--------------------------------------------------------------------------
+    */
+    'security' => [
+        'session_lifetime_minutes' => (int) env('SESSION_LIFETIME', 120),
+        'password_min' => (int) env('SME_PASSWORD_MIN', 8),
+    ],
+
 ];
