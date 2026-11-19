@@ -1,8 +1,9 @@
 <div>
     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold tracking-tight">{{ __('ui.components_title') }}</h1>
-            <p class="mt-1 text-sm text-muted">{{ __('ui.components_subtitle') }}</p>
+            <p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary-600 dark:text-primary-400">UI kit</p>
+            <h1 class="text-2xl font-semibold tracking-tight sm:text-[1.7rem]">{{ __('ui.components_title') }}</h1>
+            <p class="mt-1.5 text-sm text-muted">{{ __('ui.components_subtitle') }}</p>
         </div>
         <x-ui.button type="button" @click="$dispatch('open-modal', 'confirm-demo')">
             <x-lucide-message-square class="h-4 w-4" />
@@ -53,24 +54,24 @@
             </x-ui.form-section>
 
             <x-ui.table :headers="[__('ui.col_name'), __('ui.col_status'), __('ui.col_action')]">
-                <tr>
-                    <td class="px-4 py-3">Ayesha Rahman</td>
-                    <td class="px-4 py-3"><x-ui.badge tone="success">{{ __('ui.status_active') }}</x-ui.badge></td>
-                    <td class="px-4 py-3">
+                <tr class="transition hover:bg-primary-50/40 dark:hover:bg-white/[0.03]">
+                    <td class="px-4 py-3.5 font-medium">Ayesha Rahman</td>
+                    <td class="px-4 py-3.5"><x-ui.badge tone="success">{{ __('ui.status_active') }}</x-ui.badge></td>
+                    <td class="px-4 py-3.5">
                         <x-ui.button size="sm" variant="ghost" type="button">{{ __('ui.view') }}</x-ui.button>
                     </td>
                 </tr>
-                <tr>
-                    <td class="px-4 py-3">মোহাম্মদ করিম</td>
-                    <td class="px-4 py-3"><x-ui.badge tone="warning">{{ __('ui.status_pending') }}</x-ui.badge></td>
-                    <td class="px-4 py-3">
+                <tr class="transition hover:bg-primary-50/40 dark:hover:bg-white/[0.03]">
+                    <td class="px-4 py-3.5 font-medium">মোহাম্মদ করিম</td>
+                    <td class="px-4 py-3.5"><x-ui.badge tone="warning">{{ __('ui.status_pending') }}</x-ui.badge></td>
+                    <td class="px-4 py-3.5">
                         <x-ui.button size="sm" variant="ghost" type="button">{{ __('ui.view') }}</x-ui.button>
                     </td>
                 </tr>
-                <tr>
-                    <td class="px-4 py-3">عبد الله</td>
-                    <td class="px-4 py-3"><x-ui.badge tone="primary">Primary</x-ui.badge></td>
-                    <td class="px-4 py-3">
+                <tr class="transition hover:bg-primary-50/40 dark:hover:bg-white/[0.03]">
+                    <td class="px-4 py-3.5 font-medium">عبد الله</td>
+                    <td class="px-4 py-3.5"><x-ui.badge tone="primary">Primary</x-ui.badge></td>
+                    <td class="px-4 py-3.5">
                         <x-ui.button size="sm" variant="ghost" type="button">{{ __('ui.view') }}</x-ui.button>
                     </td>
                 </tr>

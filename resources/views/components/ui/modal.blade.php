@@ -37,7 +37,7 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="absolute inset-0 bg-slate-950/50"
+                class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"
                 @click="open = false"
             ></div>
 
@@ -49,12 +49,13 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                 x-transition:leave-end="opacity-0 translate-y-3 sm:scale-95"
-                class="relative w-full {{ $widths[$maxWidth] ?? $widths['lg'] }} rounded-xl border border-sme bg-surface shadow-sme"
+                class="relative w-full {{ $widths[$maxWidth] ?? $widths['lg'] }} overflow-hidden rounded-2xl sme-surface-solid shadow-sme"
             >
-                <div class="flex items-start justify-between border-b border-sme px-5 py-4">
+                <div class="sme-topbar-accent"></div>
+                <div class="sme-panel-header flex items-start justify-between px-5 py-4">
                     <div>
                         @if ($title)
-                            <h2 id="modal-title-{{ $name }}" class="text-base font-semibold">{{ $title }}</h2>
+                            <h2 id="modal-title-{{ $name }}" class="text-base font-semibold tracking-tight">{{ $title }}</h2>
                         @endif
                         @isset($subtitle)
                             <p class="mt-0.5 text-sm text-muted">{{ $subtitle }}</p>
@@ -70,7 +71,7 @@
                 </div>
 
                 @isset($footer)
-                    <div class="flex justify-end gap-2 border-t border-sme px-5 py-4">
+                    <div class="flex justify-end gap-2 border-t border-sme bg-gradient-to-b from-transparent to-slate-50/80 px-5 py-4 dark:to-slate-900/40">
                         {{ $footer }}
                     </div>
                 @endisset

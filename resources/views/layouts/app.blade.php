@@ -20,18 +20,18 @@
     @livewireStyles
 </head>
 <body
-    class="h-full bg-canvas text-[color:var(--sme-text)]"
+    class="h-full text-[color:var(--sme-text)]"
     x-data
     x-init="$store.theme.init()"
 >
     <div class="min-h-full lg:flex">
         @include('layouts.partials.sidebar')
 
-        <div class="flex min-h-screen min-w-0 flex-1 flex-col transition-sidebar"
+        <div class="relative flex min-h-screen min-w-0 flex-1 flex-col transition-sidebar"
              :class="$store.sidebar.collapsed ? 'lg:ms-20' : 'lg:ms-64'">
             @include('layouts.partials.topbar')
 
-            <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <main class="relative flex-1 px-4 py-6 sm:px-6 lg:px-8">
                 @hasSection('page-header')
                     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         @yield('page-header')
@@ -48,7 +48,7 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100"
                         x-transition:leave-end="opacity-0"
-                        class="mb-4 flex items-center justify-between rounded-lg border border-success-100 bg-success-50 px-4 py-3 text-success-700 dark:border-success-700/40 dark:bg-success-700/20 dark:text-success-100"
+                        class="mb-4 flex items-center justify-between rounded-xl border border-success-200/70 bg-gradient-to-r from-success-50 to-emerald-50/40 px-4 py-3 text-success-700 shadow-sme-soft dark:border-success-700/40 dark:from-success-700/20 dark:to-emerald-900/10 dark:text-success-100"
                         role="status"
                     >
                         <span>{{ session('status') }}</span>
@@ -67,11 +67,10 @@
         </div>
     </div>
 
-    {{-- Mobile overlay --}}
     <div
         x-show="$store.sidebar.open && window.innerWidth < 1024"
         x-transition.opacity
-        class="fixed inset-0 z-30 bg-slate-950/40 lg:hidden"
+        class="fixed inset-0 z-30 bg-slate-950/45 backdrop-blur-[2px] lg:hidden"
         @click="$store.sidebar.closeMobile()"
         style="display: none;"
     ></div>
@@ -110,4 +109,3 @@
     @livewireScripts
 </body>
 </html>
-
