@@ -68,11 +68,26 @@ class LoginController extends Controller
         $user->forceFill(['last_login_at' => now()])->save();
         $history->success($user);
 
-        if ($user->is_platform_admin) {
-            return redirect()->intended(route('platform.dashboard'));
+        $default = $user->is_platform_admin
+            ? route('platform.dashboard')
+            : route('tenant.dashboard');
+
+        // Avoid sending platform admins to /app|/dashboard bookmarks (was a Try Live 403).
+        $intended = $request->session()->pull('url.intended', $default);
+        if ($user->is_platform_admin && $this->isTenantBackOfficeUrl($intended)) {
+            return redirect()->to($default);
         }
 
-        return redirect()->intended(route('tenant.dashboard'));
+        return redirect()->to($intended ?: $default);
+    }
+
+    protected function isTenantBackOfficeUrl(string $url): bool
+    {
+        $path = parse_url($url, PHP_URL_PATH) ?: '';
+
+        return $path === '/app'
+            || str_starts_with($path, '/app/')
+            || $path === '/dashboard';
     }
 
     public function destroy(Request $request, LoginHistoryRecorder $history): RedirectResponse

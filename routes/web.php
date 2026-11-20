@@ -39,6 +39,19 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+/*
+| Soft landing used by Phase 01 bookmarks / Try Live — never dump platform admins into /app.
+*/
+Route::get('/home', function () {
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return auth()->user()->is_platform_admin
+        ? redirect()->route('platform.dashboard')
+        : redirect()->route('tenant.dashboard');
+})->name('home');
+
 Route::get('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 Route::middleware('guest')->group(function () {
@@ -203,5 +216,13 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         });
     });
 
-// Back-compat alias used by Phase 01 tests / bookmarks
-Route::redirect('/dashboard', '/app')->name('dashboard');
+// Back-compat alias used by Phase 01 tests / bookmarks / Try Live
+Route::get('/dashboard', function () {
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return auth()->user()->is_platform_admin
+        ? redirect()->route('platform.dashboard')
+        : redirect()->route('tenant.dashboard');
+})->name('dashboard');

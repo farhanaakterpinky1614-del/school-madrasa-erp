@@ -16,8 +16,13 @@ class EnsureTenantMember
     {
         $user = $request->user();
 
-        if (! $user || $user->is_platform_admin) {
+        if (! $user) {
             abort(403, 'Tenant member access required.');
+        }
+
+        // Platform admins belong on /platform — redirect instead of a bare 403 (Try Live / bookmarks).
+        if ($user->is_platform_admin) {
+            return redirect()->route('platform.dashboard');
         }
 
         if (! $user->tenant_id) {

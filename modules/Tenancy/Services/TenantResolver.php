@@ -36,14 +36,19 @@ class TenantResolver
             ->where('verification_status', TenantDomain::STATUS_VERIFIED)
             ->first();
 
-        if (! $domain) {
+        if ($domain) {
+            return Tenant::query()
+                ->whereKey($domain->tenant_id)
+                ->where('status', Tenant::STATUS_ACTIVE)
+                ->first();
+        }
+
+        // Preview / Try Live hosts: do not force a tenant context.
+        if (config('sme.tenancy.treat_unknown_hosts_as_central')) {
             return null;
         }
 
-        return Tenant::query()
-            ->whereKey($domain->tenant_id)
-            ->where('status', Tenant::STATUS_ACTIVE)
-            ->first();
+        return null;
     }
 
     public function isPlatformHost(string $host): bool
