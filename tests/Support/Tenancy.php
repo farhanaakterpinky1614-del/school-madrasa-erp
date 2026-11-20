@@ -5,6 +5,7 @@ namespace Tests\Support;
 use App\Core\Tenancy\CurrentTenant;
 use App\Models\User;
 use Database\Seeders\ModuleRegistrySeeder;
+use Database\Seeders\PermissionSeeder;
 use Database\Seeders\PlanSeeder;
 use Modules\Tenancy\Models\Tenant;
 use Modules\Tenancy\Services\TenantRegistrar;
@@ -15,6 +16,7 @@ trait Tenancy
     {
         $this->seed(PlanSeeder::class);
         $this->seed(ModuleRegistrySeeder::class);
+        $this->seed(PermissionSeeder::class);
     }
 
     /**

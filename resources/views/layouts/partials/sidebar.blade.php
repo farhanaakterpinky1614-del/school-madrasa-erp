@@ -10,6 +10,8 @@
             ['route' => 'platform.plans.index', 'label' => __('ui.nav.plans'), 'icon' => 'badge-dollar-sign', 'match' => 'platform.plans.*'],
             ['route' => 'platform.modules.index', 'label' => __('ui.nav.modules'), 'icon' => 'blocks', 'match' => 'platform.modules.*'],
             ['route' => 'platform.usage.index', 'label' => __('ui.nav.usage'), 'icon' => 'gauge', 'match' => 'platform.usage.*'],
+            ['route' => 'platform.users.index', 'label' => __('ui.nav.users'), 'icon' => 'users', 'match' => 'platform.users.*'],
+            ['route' => 'platform.audit.index', 'label' => __('ui.nav.audit'), 'icon' => 'scroll-text', 'match' => 'platform.audit.*'],
         ];
         $navTitle = __('ui.platform_nav');
         $brandSub = __('ui.super_admin');
@@ -17,6 +19,13 @@
         $nav = [
             ['route' => 'tenant.dashboard', 'label' => __('ui.nav.dashboard'), 'icon' => 'layout-dashboard', 'match' => 'tenant.dashboard'],
             ['route' => 'tenant.institution.edit', 'label' => __('ui.nav.institution'), 'icon' => 'school', 'match' => 'tenant.institution.*'],
+            ['route' => 'tenant.users.index', 'label' => __('ui.nav.users'), 'icon' => 'users', 'match' => 'tenant.users.*'],
+            ['route' => 'tenant.roles.index', 'label' => __('ui.nav.roles'), 'icon' => 'shield', 'match' => 'tenant.roles.*'],
+            ['route' => 'tenant.permissions.index', 'label' => __('ui.nav.permissions'), 'icon' => 'key-round', 'match' => 'tenant.permissions.*'],
+            ['route' => 'tenant.memberships.index', 'label' => __('ui.nav.memberships'), 'icon' => 'user-cog', 'match' => 'tenant.memberships.*'],
+            ['route' => 'tenant.audit.index', 'label' => __('ui.nav.audit'), 'icon' => 'scroll-text', 'match' => 'tenant.audit.*'],
+            ['route' => 'tenant.login-history.index', 'label' => __('ui.nav.login_history'), 'icon' => 'history', 'match' => 'tenant.login-history.*'],
+            ['route' => 'tenant.sessions.index', 'label' => __('ui.nav.sessions'), 'icon' => 'monitor-smartphone', 'match' => 'tenant.sessions.*'],
             ['route' => 'tenant.domains.index', 'label' => __('ui.nav.domains'), 'icon' => 'globe', 'match' => 'tenant.domains.*'],
             ['route' => 'tenant.subscription.show', 'label' => __('ui.nav.subscription'), 'icon' => 'credit-card', 'match' => 'tenant.subscription.*'],
             ['route' => 'tenant.modules.index', 'label' => __('ui.nav.modules'), 'icon' => 'blocks', 'match' => 'tenant.modules.*'],

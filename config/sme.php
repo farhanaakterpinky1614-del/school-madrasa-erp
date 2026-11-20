@@ -57,8 +57,17 @@ return [
 
         'central_domains' => array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) env('TENANCY_CENTRAL_DOMAINS', 'localhost,127.0.0.1'))
+            explode(',', (string) env('TENANCY_CENTRAL_DOMAINS', 'localhost,127.0.0.1,0.0.0.0'))
         ))),
+
+        /*
+         * When true (default in local), hosts that are not a known tenant subdomain/custom
+         * domain are treated as central — keeps Try Live / preview hosts usable.
+         */
+        'treat_unknown_hosts_as_central' => (bool) env(
+            'TENANCY_UNKNOWN_AS_CENTRAL',
+            env('APP_ENV', 'production') === 'local'
+        ),
 
         'platform_hosts' => array_values(array_filter(array_map(
             'trim',
@@ -76,6 +85,16 @@ return [
          * host resolution and keep this false.
          */
         'allow_user_tenant_fallback' => (bool) env('TENANCY_USER_FALLBACK', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security (Phase 03) — detailed rules live in config/identity.php
+    |--------------------------------------------------------------------------
+    */
+    'security' => [
+        'session_lifetime_minutes' => (int) env('SESSION_LIFETIME', 120),
+        'password_min' => (int) env('SME_PASSWORD_MIN', 8),
     ],
 
 ];
