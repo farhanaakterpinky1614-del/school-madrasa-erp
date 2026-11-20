@@ -25,6 +25,18 @@ use App\Http\Controllers\Tenant\RoleController as TenantRoleController;
 use App\Http\Controllers\Tenant\SessionController as TenantSessionController;
 use App\Http\Controllers\Tenant\SubscriptionController as TenantSubscriptionController;
 use App\Http\Controllers\Tenant\UsageController as TenantUsageController;
+use App\Http\Controllers\Tenant\Setup\AcademicTermController as TenantAcademicTermController;
+use App\Http\Controllers\Tenant\Setup\AcademicYearController as TenantAcademicYearController;
+use App\Http\Controllers\Tenant\Setup\BranchController as TenantBranchController;
+use App\Http\Controllers\Tenant\Setup\CalendarEventController as TenantCalendarEventController;
+use App\Http\Controllers\Tenant\Setup\CurriculumController as TenantCurriculumController;
+use App\Http\Controllers\Tenant\Setup\DepartmentController as TenantDepartmentController;
+use App\Http\Controllers\Tenant\Setup\GradingScaleController as TenantGradingScaleController;
+use App\Http\Controllers\Tenant\Setup\InstitutionSettingsController as TenantInstitutionSettingsController;
+use App\Http\Controllers\Tenant\Setup\SchoolClassController as TenantSchoolClassController;
+use App\Http\Controllers\Tenant\Setup\SectionController as TenantSectionController;
+use App\Http\Controllers\Tenant\Setup\ShiftController as TenantShiftController;
+use App\Http\Controllers\Tenant\Setup\SubjectController as TenantSubjectController;
 use App\Http\Controllers\Tenant\UserController as TenantUserController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -135,6 +147,139 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         });
         Route::middleware('permission:settings.institution.update')->group(function () {
             Route::put('/institution', [TenantInstitutionController::class, 'update'])->name('institution.update');
+        });
+
+        Route::middleware('permission:settings.branding.view')->group(function () {
+            Route::get('/settings', [TenantInstitutionSettingsController::class, 'edit'])->name('settings.edit');
+        });
+        Route::middleware('permission:settings.branding.update')->group(function () {
+            Route::put('/settings', [TenantInstitutionSettingsController::class, 'update'])->name('settings.update');
+        });
+
+        // Phase 04 — Institution setup & academic structure
+        Route::middleware('permission:branches.branch.view')->group(function () {
+            Route::get('/branches', [TenantBranchController::class, 'index'])->name('branches.index');
+        });
+        Route::middleware('permission:branches.branch.manage')->group(function () {
+            Route::get('/branches/create', [TenantBranchController::class, 'create'])->name('branches.create');
+            Route::post('/branches', [TenantBranchController::class, 'store'])->name('branches.store');
+            Route::get('/branches/{branch}/edit', [TenantBranchController::class, 'edit'])->name('branches.edit');
+            Route::put('/branches/{branch}', [TenantBranchController::class, 'update'])->name('branches.update');
+            Route::delete('/branches/{branch}', [TenantBranchController::class, 'destroy'])->name('branches.destroy');
+        });
+
+        Route::middleware('permission:academics.department.view')->group(function () {
+            Route::get('/departments', [TenantDepartmentController::class, 'index'])->name('departments.index');
+        });
+        Route::middleware('permission:academics.department.manage')->group(function () {
+            Route::get('/departments/create', [TenantDepartmentController::class, 'create'])->name('departments.create');
+            Route::post('/departments', [TenantDepartmentController::class, 'store'])->name('departments.store');
+            Route::get('/departments/{department}/edit', [TenantDepartmentController::class, 'edit'])->name('departments.edit');
+            Route::put('/departments/{department}', [TenantDepartmentController::class, 'update'])->name('departments.update');
+            Route::delete('/departments/{department}', [TenantDepartmentController::class, 'destroy'])->name('departments.destroy');
+        });
+
+        Route::middleware('permission:academics.year.view')->group(function () {
+            Route::get('/years', [TenantAcademicYearController::class, 'index'])->name('years.index');
+        });
+        Route::middleware('permission:academics.year.manage')->group(function () {
+            Route::get('/years/create', [TenantAcademicYearController::class, 'create'])->name('years.create');
+            Route::post('/years', [TenantAcademicYearController::class, 'store'])->name('years.store');
+            Route::get('/years/{year}/edit', [TenantAcademicYearController::class, 'edit'])->name('years.edit');
+            Route::put('/years/{year}', [TenantAcademicYearController::class, 'update'])->name('years.update');
+            Route::delete('/years/{year}', [TenantAcademicYearController::class, 'destroy'])->name('years.destroy');
+        });
+
+        Route::middleware('permission:academics.term.view')->group(function () {
+            Route::get('/terms', [TenantAcademicTermController::class, 'index'])->name('terms.index');
+        });
+        Route::middleware('permission:academics.term.manage')->group(function () {
+            Route::get('/terms/create', [TenantAcademicTermController::class, 'create'])->name('terms.create');
+            Route::post('/terms', [TenantAcademicTermController::class, 'store'])->name('terms.store');
+            Route::get('/terms/{term}/edit', [TenantAcademicTermController::class, 'edit'])->name('terms.edit');
+            Route::put('/terms/{term}', [TenantAcademicTermController::class, 'update'])->name('terms.update');
+            Route::delete('/terms/{term}', [TenantAcademicTermController::class, 'destroy'])->name('terms.destroy');
+        });
+
+        Route::middleware('permission:academics.shift.view')->group(function () {
+            Route::get('/shifts', [TenantShiftController::class, 'index'])->name('shifts.index');
+        });
+        Route::middleware('permission:academics.shift.manage')->group(function () {
+            Route::get('/shifts/create', [TenantShiftController::class, 'create'])->name('shifts.create');
+            Route::post('/shifts', [TenantShiftController::class, 'store'])->name('shifts.store');
+            Route::get('/shifts/{shift}/edit', [TenantShiftController::class, 'edit'])->name('shifts.edit');
+            Route::put('/shifts/{shift}', [TenantShiftController::class, 'update'])->name('shifts.update');
+            Route::delete('/shifts/{shift}', [TenantShiftController::class, 'destroy'])->name('shifts.destroy');
+        });
+
+        Route::middleware('permission:academics.class.view')->group(function () {
+            Route::get('/classes', [TenantSchoolClassController::class, 'index'])->name('classes.index');
+        });
+        Route::middleware('permission:academics.class.manage')->group(function () {
+            Route::get('/classes/create', [TenantSchoolClassController::class, 'create'])->name('classes.create');
+            Route::post('/classes', [TenantSchoolClassController::class, 'store'])->name('classes.store');
+            Route::get('/classes/{class}/edit', [TenantSchoolClassController::class, 'edit'])->name('classes.edit');
+            Route::put('/classes/{class}', [TenantSchoolClassController::class, 'update'])->name('classes.update');
+            Route::delete('/classes/{class}', [TenantSchoolClassController::class, 'destroy'])->name('classes.destroy');
+        });
+
+        Route::middleware('permission:academics.section.view')->group(function () {
+            Route::get('/sections', [TenantSectionController::class, 'index'])->name('sections.index');
+        });
+        Route::middleware('permission:academics.section.manage')->group(function () {
+            Route::get('/sections/create', [TenantSectionController::class, 'create'])->name('sections.create');
+            Route::post('/sections', [TenantSectionController::class, 'store'])->name('sections.store');
+            Route::get('/sections/{section}/edit', [TenantSectionController::class, 'edit'])->name('sections.edit');
+            Route::put('/sections/{section}', [TenantSectionController::class, 'update'])->name('sections.update');
+            Route::delete('/sections/{section}', [TenantSectionController::class, 'destroy'])->name('sections.destroy');
+        });
+
+        Route::middleware('permission:academics.subject.view')->group(function () {
+            Route::get('/subjects', [TenantSubjectController::class, 'index'])->name('subjects.index');
+        });
+        Route::middleware('permission:academics.subject.manage')->group(function () {
+            Route::get('/subjects/create', [TenantSubjectController::class, 'create'])->name('subjects.create');
+            Route::post('/subjects', [TenantSubjectController::class, 'store'])->name('subjects.store');
+            Route::get('/subjects/{subject}/edit', [TenantSubjectController::class, 'edit'])->name('subjects.edit');
+            Route::put('/subjects/{subject}', [TenantSubjectController::class, 'update'])->name('subjects.update');
+            Route::delete('/subjects/{subject}', [TenantSubjectController::class, 'destroy'])->name('subjects.destroy');
+        });
+
+        Route::middleware('permission:academics.curriculum.view')->group(function () {
+            Route::get('/curricula', [TenantCurriculumController::class, 'index'])->name('curricula.index');
+        });
+        Route::middleware('permission:academics.curriculum.manage')->group(function () {
+            Route::get('/curricula/create', [TenantCurriculumController::class, 'create'])->name('curricula.create');
+            Route::post('/curricula', [TenantCurriculumController::class, 'store'])->name('curricula.store');
+            Route::get('/curricula/{curriculum}/edit', [TenantCurriculumController::class, 'edit'])->name('curricula.edit');
+            Route::put('/curricula/{curriculum}', [TenantCurriculumController::class, 'update'])->name('curricula.update');
+            Route::post('/curricula/{curriculum}/subjects', [TenantCurriculumController::class, 'attachSubject'])->name('curricula.attach-subject');
+            Route::delete('/curricula/{curriculum}/subjects/{link}', [TenantCurriculumController::class, 'detachSubject'])->name('curricula.detach-subject');
+            Route::delete('/curricula/{curriculum}', [TenantCurriculumController::class, 'destroy'])->name('curricula.destroy');
+        });
+
+        Route::middleware('permission:academics.grading.view')->group(function () {
+            Route::get('/grading', [TenantGradingScaleController::class, 'index'])->name('grading.index');
+        });
+        Route::middleware('permission:academics.grading.manage')->group(function () {
+            Route::get('/grading/create', [TenantGradingScaleController::class, 'create'])->name('grading.create');
+            Route::post('/grading', [TenantGradingScaleController::class, 'store'])->name('grading.store');
+            Route::get('/grading/{grading}/edit', [TenantGradingScaleController::class, 'edit'])->name('grading.edit');
+            Route::put('/grading/{grading}', [TenantGradingScaleController::class, 'update'])->name('grading.update');
+            Route::post('/grading/{grading}/bands', [TenantGradingScaleController::class, 'storeBand'])->name('grading.store-band');
+            Route::delete('/grading/{grading}/bands/{band}', [TenantGradingScaleController::class, 'destroyBand'])->name('grading.destroy-band');
+            Route::delete('/grading/{grading}', [TenantGradingScaleController::class, 'destroy'])->name('grading.destroy');
+        });
+
+        Route::middleware('permission:academics.calendar.view')->group(function () {
+            Route::get('/calendar', [TenantCalendarEventController::class, 'index'])->name('calendar.index');
+        });
+        Route::middleware('permission:academics.calendar.manage')->group(function () {
+            Route::get('/calendar/create', [TenantCalendarEventController::class, 'create'])->name('calendar.create');
+            Route::post('/calendar', [TenantCalendarEventController::class, 'store'])->name('calendar.store');
+            Route::get('/calendar/{calendar}/edit', [TenantCalendarEventController::class, 'edit'])->name('calendar.edit');
+            Route::put('/calendar/{calendar}', [TenantCalendarEventController::class, 'update'])->name('calendar.update');
+            Route::delete('/calendar/{calendar}', [TenantCalendarEventController::class, 'destroy'])->name('calendar.destroy');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
