@@ -9,6 +9,7 @@
         'warning' => 'bg-gradient-to-r from-warning-50 to-amber-50 text-warning-700 ring-1 ring-warning-200/70 dark:from-warning-700/20 dark:to-amber-900/10 dark:text-warning-300 dark:ring-warning-700/40',
         'danger' => 'bg-gradient-to-r from-danger-50 to-rose-50 text-danger-700 ring-1 ring-danger-200/70 dark:from-danger-700/20 dark:to-rose-900/10 dark:text-danger-300 dark:ring-danger-700/40',
         'primary' => 'bg-gradient-to-r from-primary-50 to-secondary-50 text-primary-700 ring-1 ring-primary-200/70 dark:from-primary-700/25 dark:to-secondary-900/20 dark:text-primary-300 dark:ring-primary-700/40',
+        'info' => 'bg-gradient-to-r from-primary-50 to-secondary-50 text-primary-700 ring-1 ring-primary-200/70 dark:from-primary-700/25 dark:to-secondary-900/20 dark:text-primary-300 dark:ring-primary-700/40',
     ];
 @endphp
 

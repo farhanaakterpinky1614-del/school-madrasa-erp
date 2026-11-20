@@ -48,6 +48,104 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Institution type presets (Phase 04) — config-driven, no codebase fork
+    |--------------------------------------------------------------------------
+    */
+    'institution_presets' => [
+        'school' => [
+            'label' => 'General School',
+            'features' => [
+                'classes_sections' => true,
+                'departments' => false,
+                'standard_subjects' => true,
+                'hifz' => false,
+                'board_exam_fields' => true,
+            ],
+            'terminology' => [
+                'class' => 'Class',
+                'section' => 'Section',
+                'department' => 'Department',
+                'teacher' => 'Teacher',
+                'principal' => 'Principal',
+            ],
+            'default_classes' => [6, 7, 8, 9, 10],
+        ],
+        'college' => [
+            'label' => 'College',
+            'features' => [
+                'classes_sections' => true,
+                'departments' => true,
+                'standard_subjects' => true,
+                'hifz' => false,
+                'board_exam_fields' => true,
+            ],
+            'terminology' => [
+                'class' => 'Year',
+                'section' => 'Group',
+                'department' => 'Department',
+                'teacher' => 'Teacher',
+                'principal' => 'Principal',
+            ],
+            'default_classes' => ['XI', 'XII'],
+        ],
+        'alia' => [
+            'label' => 'Alia Madrasa',
+            'features' => [
+                'classes_sections' => true,
+                'departments' => false,
+                'standard_subjects' => true,
+                'hifz' => false,
+                'board_exam_fields' => true,
+            ],
+            'terminology' => [
+                'class' => 'Class',
+                'section' => 'Section',
+                'department' => 'Department',
+                'teacher' => 'Teacher',
+                'principal' => 'Principal',
+            ],
+            'default_classes' => [6, 7, 8, 9, 10],
+        ],
+        'qawmi' => [
+            'label' => 'Qawmi Madrasa',
+            'features' => [
+                'classes_sections' => false,
+                'departments' => true,
+                'standard_subjects' => true,
+                'hifz' => false,
+                'board_exam_fields' => false,
+            ],
+            'terminology' => [
+                'class' => 'Darajah',
+                'section' => 'Halaqah',
+                'department' => 'Kitab',
+                'teacher' => 'Ustaz',
+                'principal' => 'Muhtamim',
+            ],
+            'default_classes' => ['Ibtedayee', 'Mutawassit', 'Sanabi'],
+        ],
+        'hifz' => [
+            'label' => 'Hifz Madrasa',
+            'features' => [
+                'classes_sections' => false,
+                'departments' => false,
+                'standard_subjects' => false,
+                'hifz' => true,
+                'board_exam_fields' => false,
+            ],
+            'terminology' => [
+                'class' => 'Circle',
+                'section' => 'Group',
+                'department' => 'Department',
+                'teacher' => 'Ustaz',
+                'principal' => 'Muhtamim',
+            ],
+            'default_classes' => ['Nazira', 'Hifz', 'Dawr'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Tenancy
     |--------------------------------------------------------------------------
     */
