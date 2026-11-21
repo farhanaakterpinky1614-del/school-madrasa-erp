@@ -50,6 +50,16 @@ use App\Http\Controllers\Tenant\Students\StudentImportController as TenantStuden
 use App\Http\Controllers\Tenant\Admissions\FormTemplateController as TenantAdmissionFormController;
 use App\Http\Controllers\Tenant\Admissions\AdmissionSessionController as TenantAdmissionSessionController;
 use App\Http\Controllers\Tenant\Admissions\ApplicationController as TenantApplicationController;
+use App\Http\Controllers\Tenant\Hr\StaffController as TenantStaffController;
+use App\Http\Controllers\Tenant\Hr\TeacherController as TenantTeacherController;
+use App\Http\Controllers\Tenant\Hr\DesignationController as TenantDesignationController;
+use App\Http\Controllers\Tenant\Hr\TeacherAssignmentController as TenantTeacherAssignmentController;
+use App\Http\Controllers\Tenant\Hr\StaffDocumentController as TenantStaffDocumentController;
+use App\Http\Controllers\Tenant\Hr\StaffAttendanceController as TenantStaffAttendanceController;
+use App\Http\Controllers\Tenant\Hr\LeaveTypeController as TenantLeaveTypeController;
+use App\Http\Controllers\Tenant\Hr\LeaveRequestController as TenantLeaveRequestController;
+use App\Http\Controllers\Tenant\Hr\SalaryStructureController as TenantSalaryStructureController;
+use App\Http\Controllers\Tenant\Hr\PayrollController as TenantPayrollController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -379,6 +389,90 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         });
         Route::middleware('permission:admissions.application.view')->group(function () {
             Route::get('/applications/{application}', [TenantApplicationController::class, 'show'])->name('applications.show');
+        });
+
+        // Phase 06 — Teacher, Employee & HR
+        Route::middleware('permission:hr.staff.view')->group(function () {
+            Route::get('/staff', [TenantStaffController::class, 'index'])->name('staff.index');
+            Route::get('/staff/{staff}', [TenantStaffController::class, 'show'])->name('staff.show');
+        });
+        Route::middleware('permission:hr.staff.create')->group(function () {
+            Route::get('/staff-create', [TenantStaffController::class, 'create'])->name('staff.create');
+            Route::post('/staff', [TenantStaffController::class, 'store'])->name('staff.store');
+        });
+        Route::middleware('permission:hr.staff.update')->group(function () {
+            Route::get('/staff/{staff}/edit', [TenantStaffController::class, 'edit'])->name('staff.edit');
+            Route::put('/staff/{staff}', [TenantStaffController::class, 'update'])->name('staff.update');
+        });
+        Route::middleware('permission:hr.document.manage')->group(function () {
+            Route::post('/staff/{staff}/documents', [TenantStaffDocumentController::class, 'store'])->name('staff.documents.store');
+            Route::delete('/staff/{staff}/documents/{document}', [TenantStaffDocumentController::class, 'destroy'])->name('staff.documents.destroy');
+        });
+
+        Route::middleware('permission:hr.teacher.view')->group(function () {
+            Route::get('/teachers', [TenantTeacherController::class, 'index'])->name('teachers.index');
+        });
+        Route::middleware('permission:hr.assignment.manage')->group(function () {
+            Route::get('/assignments', [TenantTeacherAssignmentController::class, 'index'])->name('assignments.index');
+            Route::get('/assignments/create', [TenantTeacherAssignmentController::class, 'create'])->name('assignments.create');
+            Route::post('/assignments', [TenantTeacherAssignmentController::class, 'store'])->name('assignments.store');
+            Route::delete('/assignments/{assignment}', [TenantTeacherAssignmentController::class, 'destroy'])->name('assignments.destroy');
+        });
+
+        Route::middleware('permission:hr.designation.manage')->group(function () {
+            Route::get('/designations', [TenantDesignationController::class, 'index'])->name('designations.index');
+            Route::get('/designations/create', [TenantDesignationController::class, 'create'])->name('designations.create');
+            Route::post('/designations', [TenantDesignationController::class, 'store'])->name('designations.store');
+            Route::get('/designations/{designation}/edit', [TenantDesignationController::class, 'edit'])->name('designations.edit');
+            Route::put('/designations/{designation}', [TenantDesignationController::class, 'update'])->name('designations.update');
+        });
+
+        Route::middleware('permission:hr.attendance.view')->group(function () {
+            Route::get('/staff-attendance', [TenantStaffAttendanceController::class, 'index'])->name('staff-attendance.index');
+        });
+        Route::middleware('permission:hr.attendance.manage')->group(function () {
+            Route::post('/staff-attendance', [TenantStaffAttendanceController::class, 'store'])->name('staff-attendance.store');
+        });
+
+        Route::middleware('permission:hr.leave.view')->group(function () {
+            Route::get('/leave-types', [TenantLeaveTypeController::class, 'index'])->name('leave-types.index');
+            Route::get('/leave-requests', [TenantLeaveRequestController::class, 'index'])->name('leave-requests.index');
+            Route::get('/leave-requests/{leaveRequest}', [TenantLeaveRequestController::class, 'show'])->name('leave-requests.show');
+        });
+        Route::middleware('permission:hr.leave.manage')->group(function () {
+            Route::get('/leave-types/create', [TenantLeaveTypeController::class, 'create'])->name('leave-types.create');
+            Route::post('/leave-types', [TenantLeaveTypeController::class, 'store'])->name('leave-types.store');
+            Route::get('/leave-types/{leaveType}/edit', [TenantLeaveTypeController::class, 'edit'])->name('leave-types.edit');
+            Route::put('/leave-types/{leaveType}', [TenantLeaveTypeController::class, 'update'])->name('leave-types.update');
+            Route::get('/leave-requests-create', [TenantLeaveRequestController::class, 'create'])->name('leave-requests.create');
+            Route::post('/leave-requests', [TenantLeaveRequestController::class, 'store'])->name('leave-requests.store');
+        });
+        Route::middleware('permission:hr.leave.approve')->group(function () {
+            Route::post('/leave-requests/{leaveRequest}/approve', [TenantLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+            Route::post('/leave-requests/{leaveRequest}/reject', [TenantLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
+        });
+
+        Route::middleware('permission:hr.salary.view')->group(function () {
+            Route::get('/salary', [TenantSalaryStructureController::class, 'index'])->name('salary.index');
+        });
+        Route::middleware('permission:hr.salary.manage')->group(function () {
+            Route::get('/salary/create', [TenantSalaryStructureController::class, 'create'])->name('salary.create');
+            Route::post('/salary', [TenantSalaryStructureController::class, 'store'])->name('salary.store');
+            Route::get('/salary/{salary}/edit', [TenantSalaryStructureController::class, 'edit'])->name('salary.edit');
+            Route::put('/salary/{salary}', [TenantSalaryStructureController::class, 'update'])->name('salary.update');
+            Route::get('/salary-assign', [TenantSalaryStructureController::class, 'assignForm'])->name('salary.assign');
+            Route::post('/salary-assign', [TenantSalaryStructureController::class, 'assign'])->name('salary.assign.store');
+        });
+
+        Route::middleware('permission:hr.payroll.view')->group(function () {
+            Route::get('/payroll', [TenantPayrollController::class, 'index'])->name('payroll.index');
+            Route::get('/payroll/{payroll}', [TenantPayrollController::class, 'show'])->name('payroll.show');
+        });
+        Route::middleware('permission:hr.payroll.manage')->group(function () {
+            Route::get('/payroll-create', [TenantPayrollController::class, 'create'])->name('payroll.create');
+            Route::post('/payroll', [TenantPayrollController::class, 'store'])->name('payroll.store');
+            Route::post('/payroll/{payroll}/process', [TenantPayrollController::class, 'process'])->name('payroll.process');
+            Route::post('/payroll/{payroll}/paid', [TenantPayrollController::class, 'markPaid'])->name('payroll.paid');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
