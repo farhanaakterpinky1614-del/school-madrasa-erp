@@ -155,6 +155,14 @@ return [
         'hr.payroll.manage',
         'hr.designation.manage',
 
+        // Attendance (Phase 08)
+        'attendance.daily.view',
+        'attendance.daily.manage',
+        'attendance.period.view',
+        'attendance.period.manage',
+        'attendance.report.view',
+        'attendance.qr.manage',
+
         // Placeholder module permissions used by role templates (enforced when modules ship)
         'fees.payment.view',
         'fees.payment.create',
@@ -262,6 +270,12 @@ return [
             'hr.leave.approve',
             'hr.salary.view',
             'hr.payroll.view',
+            'attendance.daily.view',
+            'attendance.daily.manage',
+            'attendance.period.view',
+            'attendance.period.manage',
+            'attendance.report.view',
+            'attendance.qr.manage',
             'fees.payment.view',
             'reports.export.create',
         ],
@@ -318,6 +332,12 @@ return [
             'admissions.application.manage',
             'admissions.session.manage',
             'admissions.form.manage',
+            'attendance.daily.view',
+            'attendance.daily.manage',
+            'attendance.period.view',
+            'attendance.period.manage',
+            'attendance.report.view',
+            'attendance.qr.manage',
         ],
         'Teacher' => [
             'academics.class.view',
@@ -338,6 +358,11 @@ return [
             'students.guardian.view',
             'hr.leave.view',
             'hr.leave.manage',
+            'attendance.daily.view',
+            'attendance.daily.manage',
+            'attendance.period.view',
+            'attendance.period.manage',
+            'attendance.qr.manage',
         ],
         'Accountant' => [
             'students.student.view',
