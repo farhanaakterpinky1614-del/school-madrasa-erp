@@ -10,6 +10,7 @@ use Modules\Examinations\Services\DemoExamProvisioner;
 use Modules\Fees\Services\DemoFeeProvisioner;
 use Modules\Hifz\Services\DemoHifzProvisioner;
 use Modules\Hr\Services\DemoHrProvisioner;
+use Modules\Library\Services\DemoLibraryProvisioner;
 use Modules\Students\Services\DemoStudentProvisioner;
 use Modules\Tenancy\Services\TenantRegistrar;
 
@@ -48,5 +49,6 @@ class DemoTenantSeeder extends Seeder
         app(DemoExamProvisioner::class)->provision($registered['tenant']);
         app(DemoHifzProvisioner::class)->provision($registered['tenant']);
         app(DemoFeeProvisioner::class)->provision($registered['tenant']);
+        app(DemoLibraryProvisioner::class)->provision($registered['tenant']);
     }
 }
