@@ -86,6 +86,14 @@ use App\Http\Controllers\Tenant\Hifz\HifzProgressLogController as TenantHifzProg
 use App\Http\Controllers\Tenant\Hifz\HifzRevisionController as TenantHifzRevisionController;
 use App\Http\Controllers\Tenant\Hifz\IslamicSubjectMetaController as TenantIslamicSubjectMetaController;
 use App\Http\Controllers\Tenant\Hifz\HifzReportController as TenantHifzReportController;
+use App\Http\Controllers\Tenant\Fees\FeeCategoryController as TenantFeeCategoryController;
+use App\Http\Controllers\Tenant\Fees\FeeStructureController as TenantFeeStructureController;
+use App\Http\Controllers\Tenant\Fees\FeeInvoiceController as TenantFeeInvoiceController;
+use App\Http\Controllers\Tenant\Fees\FeePaymentController as TenantFeePaymentController;
+use App\Http\Controllers\Tenant\Fees\FeeDiscountController as TenantFeeDiscountController;
+use App\Http\Controllers\Tenant\Finance\ExpenseCategoryController as TenantExpenseCategoryController;
+use App\Http\Controllers\Tenant\Finance\ExpenseController as TenantExpenseController;
+use App\Http\Controllers\Tenant\Finance\ExpenseReportController as TenantExpenseReportController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -707,6 +715,75 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         Route::middleware('permission:hifz.report.view')->group(function () {
             Route::get('/hifz/reports', [TenantHifzReportController::class, 'index'])->name('hifz.reports.index');
             Route::get('/hifz/reports/pdf', [TenantHifzReportController::class, 'pdf'])->name('hifz.reports.pdf');
+        });
+
+        // Phase 11 — Fees & finance
+        Route::middleware('permission:fees.category.view')->group(function () {
+            Route::get('/fees/categories', [TenantFeeCategoryController::class, 'index'])->name('fees.categories.index');
+        });
+        Route::middleware('permission:fees.category.manage')->group(function () {
+            Route::post('/fees/categories', [TenantFeeCategoryController::class, 'store'])->name('fees.categories.store');
+            Route::put('/fees/categories/{category}', [TenantFeeCategoryController::class, 'update'])->name('fees.categories.update');
+            Route::delete('/fees/categories/{category}', [TenantFeeCategoryController::class, 'destroy'])->name('fees.categories.destroy');
+        });
+
+        Route::middleware('permission:fees.structure.view')->group(function () {
+            Route::get('/fees/structures', [TenantFeeStructureController::class, 'index'])->name('fees.structures.index');
+        });
+        Route::middleware('permission:fees.structure.manage')->group(function () {
+            Route::post('/fees/structures', [TenantFeeStructureController::class, 'store'])->name('fees.structures.store');
+            Route::put('/fees/structures/{structure}', [TenantFeeStructureController::class, 'update'])->name('fees.structures.update');
+            Route::delete('/fees/structures/{structure}', [TenantFeeStructureController::class, 'destroy'])->name('fees.structures.destroy');
+        });
+        Route::middleware('permission:fees.invoice.manage')->group(function () {
+            Route::post('/fees/structures/{structure}/assign', [TenantFeeStructureController::class, 'assign'])->name('fees.structures.assign');
+        });
+
+        Route::middleware('permission:fees.invoice.manage')->group(function () {
+            Route::get('/fees/invoices/create', [TenantFeeInvoiceController::class, 'create'])->name('fees.invoices.create');
+            Route::post('/fees/invoices', [TenantFeeInvoiceController::class, 'store'])->name('fees.invoices.store');
+        });
+        Route::middleware('permission:fees.invoice.view')->group(function () {
+            Route::get('/fees/invoices', [TenantFeeInvoiceController::class, 'index'])->name('fees.invoices.index');
+            Route::get('/fees/invoices/{invoice}', [TenantFeeInvoiceController::class, 'show'])->name('fees.invoices.show');
+        });
+        Route::middleware('permission:fees.invoice.manage')->group(function () {
+            Route::post('/fees/invoices/{invoice}/issue', [TenantFeeInvoiceController::class, 'issue'])->name('fees.invoices.issue');
+            Route::post('/fees/invoices/{invoice}/cancel', [TenantFeeInvoiceController::class, 'cancel'])->name('fees.invoices.cancel');
+        });
+
+        Route::middleware('permission:fees.discount.manage')->group(function () {
+            Route::post('/fees/invoices/{invoice}/discounts', [TenantFeeDiscountController::class, 'store'])->name('fees.discounts.store');
+            Route::delete('/fees/invoices/{invoice}/discounts/{discount}', [TenantFeeDiscountController::class, 'destroy'])->name('fees.discounts.destroy');
+        });
+
+        Route::middleware('permission:fees.payment.view')->group(function () {
+            Route::get('/fees/payments', [TenantFeePaymentController::class, 'index'])->name('fees.payments.index');
+        });
+        Route::middleware('permission:fees.payment.create')->group(function () {
+            Route::post('/fees/payments', [TenantFeePaymentController::class, 'store'])->name('fees.payments.store');
+        });
+        Route::middleware('permission:fees.receipt.export')->group(function () {
+            Route::get('/fees/payments/{payment}/receipt', [TenantFeePaymentController::class, 'receipt'])->name('fees.payments.receipt');
+        });
+
+        Route::middleware('permission:finance.expense_category.manage')->group(function () {
+            Route::get('/finance/expense-categories', [TenantExpenseCategoryController::class, 'index'])->name('finance.expense-categories.index');
+            Route::post('/finance/expense-categories', [TenantExpenseCategoryController::class, 'store'])->name('finance.expense-categories.store');
+            Route::put('/finance/expense-categories/{category}', [TenantExpenseCategoryController::class, 'update'])->name('finance.expense-categories.update');
+            Route::delete('/finance/expense-categories/{category}', [TenantExpenseCategoryController::class, 'destroy'])->name('finance.expense-categories.destroy');
+        });
+
+        Route::middleware('permission:finance.expense.view')->group(function () {
+            Route::get('/finance/expenses', [TenantExpenseController::class, 'index'])->name('finance.expenses.index');
+        });
+        Route::middleware('permission:finance.expense.manage')->group(function () {
+            Route::post('/finance/expenses', [TenantExpenseController::class, 'store'])->name('finance.expenses.store');
+            Route::delete('/finance/expenses/{expense}', [TenantExpenseController::class, 'destroy'])->name('finance.expenses.destroy');
+        });
+
+        Route::middleware('permission:finance.report.view')->group(function () {
+            Route::get('/finance/expense-reports', [TenantExpenseReportController::class, 'index'])->name('finance.reports.index');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {

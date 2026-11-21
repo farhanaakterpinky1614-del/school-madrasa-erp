@@ -18,6 +18,7 @@ class ModuleRegistrySeeder extends Seeder
             ['key' => 'attendance', 'name' => 'Attendance', 'feature_key' => null, 'is_core' => true, 'sort_order' => 12],
             ['key' => 'examinations', 'name' => 'Examinations', 'feature_key' => null, 'is_core' => true, 'sort_order' => 13],
             ['key' => 'fees', 'name' => 'Fees', 'feature_key' => null, 'is_core' => true, 'sort_order' => 14],
+            ['key' => 'finance', 'name' => 'Finance / expenses', 'feature_key' => null, 'is_core' => true, 'sort_order' => 14],
             ['key' => 'hr', 'name' => 'HR & payroll', 'feature_key' => null, 'is_core' => true, 'sort_order' => 15],
             ['key' => 'hifz', 'name' => 'Hifz', 'feature_key' => 'module_hifz', 'is_core' => false, 'sort_order' => 20],
             ['key' => 'library', 'name' => 'Library', 'feature_key' => 'module_library', 'is_core' => false, 'sort_order' => 21],
