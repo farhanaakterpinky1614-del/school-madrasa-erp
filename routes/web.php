@@ -75,6 +75,12 @@ use App\Http\Controllers\Tenant\Attendance\DailyAttendanceController as TenantDa
 use App\Http\Controllers\Tenant\Attendance\PeriodAttendanceController as TenantPeriodAttendanceController;
 use App\Http\Controllers\Tenant\Attendance\AttendanceReportController as TenantAttendanceReportController;
 use App\Http\Controllers\Tenant\Attendance\AttendanceQrController as TenantAttendanceQrController;
+use App\Http\Controllers\Tenant\Examinations\ExamController as TenantExamController;
+use App\Http\Controllers\Tenant\Examinations\ExamSubjectController as TenantExamSubjectController;
+use App\Http\Controllers\Tenant\Examinations\MarksEntryController as TenantMarksEntryController;
+use App\Http\Controllers\Tenant\Examinations\ResultPublishController as TenantResultPublishController;
+use App\Http\Controllers\Tenant\Examinations\GradingSchemeController as TenantGradingSchemeController;
+use App\Http\Controllers\Tenant\Examinations\MarksheetPdfController as TenantMarksheetPdfController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -612,6 +618,48 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         Route::middleware('permission:attendance.qr.manage')->group(function () {
             Route::get('/attendance/qr', [TenantAttendanceQrController::class, 'index'])->name('attendance.qr.index');
             Route::post('/attendance/qr', [TenantAttendanceQrController::class, 'store'])->name('attendance.qr.store');
+        });
+
+        // Examinations (Phase 09)
+        Route::middleware('permission:exams.exam.view')->group(function () {
+            Route::get('/exams', [TenantExamController::class, 'index'])->name('exams.index');
+        });
+        Route::middleware('permission:exams.exam.manage')->group(function () {
+            Route::get('/exams/create', [TenantExamController::class, 'create'])->name('exams.create');
+            Route::post('/exams', [TenantExamController::class, 'store'])->name('exams.store');
+            Route::get('/exams/{exam}/edit', [TenantExamController::class, 'edit'])->name('exams.edit');
+            Route::put('/exams/{exam}', [TenantExamController::class, 'update'])->name('exams.update');
+            Route::delete('/exams/{exam}', [TenantExamController::class, 'destroy'])->name('exams.destroy');
+        });
+        Route::middleware('permission:exams.exam.view')->group(function () {
+            Route::get('/exams/{exam}', [TenantExamController::class, 'show'])->name('exams.show');
+        });
+        Route::middleware('permission:exams.subject.manage')->group(function () {
+            Route::post('/exams/{exam}/subjects', [TenantExamSubjectController::class, 'store'])->name('exams.subjects.store');
+            Route::put('/exams/{exam}/subjects/{examSubject}', [TenantExamSubjectController::class, 'update'])->name('exams.subjects.update');
+            Route::delete('/exams/{exam}/subjects/{examSubject}', [TenantExamSubjectController::class, 'destroy'])->name('exams.subjects.destroy');
+        });
+        Route::middleware('permission:exams.marks.view')->group(function () {
+            Route::get('/marks', [TenantMarksEntryController::class, 'index'])->name('marks.index');
+        });
+        Route::middleware('permission:exams.marks.manage')->group(function () {
+            Route::post('/marks', [TenantMarksEntryController::class, 'store'])->name('marks.store');
+        });
+        Route::middleware('permission:exams.exam.view')->group(function () {
+            Route::get('/grading-schemes', [TenantGradingSchemeController::class, 'index'])->name('grading-schemes.index');
+        });
+        Route::middleware('permission:exams.exam.manage')->group(function () {
+            Route::post('/grading-schemes', [TenantGradingSchemeController::class, 'store'])->name('grading-schemes.store');
+            Route::delete('/grading-schemes/{scheme}', [TenantGradingSchemeController::class, 'destroy'])->name('grading-schemes.destroy');
+        });
+        Route::middleware('permission:exams.publish.manage')->group(function () {
+            Route::get('/results/publish', [TenantResultPublishController::class, 'index'])->name('results.publish.index');
+            Route::post('/results/publish', [TenantResultPublishController::class, 'store'])->name('results.publish.store');
+        });
+        Route::middleware('permission:exams.pdf.export')->group(function () {
+            Route::get('/results/pdf', [TenantMarksheetPdfController::class, 'index'])->name('results.pdf.index');
+            Route::get('/results/pdf/{exam}/marksheet/{student}', [TenantMarksheetPdfController::class, 'studentMarksheet'])->name('results.pdf.marksheet');
+            Route::get('/results/pdf/{exam}/class-sheet', [TenantMarksheetPdfController::class, 'classSheet'])->name('results.pdf.class');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
