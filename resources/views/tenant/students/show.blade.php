@@ -17,6 +17,36 @@
     @endif
     <div class="grid gap-6 lg:grid-cols-2">
         <x-ui.form-section :title="__('ui.student_profile')">
+            <div class="mb-4 flex items-start gap-4">
+                @if ($student->photo_path)
+                    <img
+                        src="{{ route('tenant.students.photo.show', $student) }}"
+                        alt="{{ $student->full_name }}"
+                        class="h-24 w-20 rounded-xl border border-sme object-cover"
+                    />
+                @else
+                    <div class="flex h-24 w-20 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-[10px] font-medium uppercase tracking-wide text-slate-500">{{ __('ui.photo_placeholder') }}</div>
+                @endif
+                <div class="flex-1 space-y-3">
+                    <p class="text-lg font-semibold tracking-tight">{{ $student->full_name }}</p>
+                    <form method="POST" action="{{ route('tenant.students.photo.store', $student) }}" enctype="multipart/form-data" class="space-y-2">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="profile" />
+                        <label class="mb-1 block text-sm font-medium">{{ $student->photo_path ? __('ui.change_photo') : __('ui.add_photo') }}</label>
+                        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required class="block w-full text-sm" />
+                        @error('photo')<p class="text-xs text-danger-600">{{ $message }}</p>@enderror
+                        <x-ui.button type="submit" size="sm" variant="secondary">{{ $student->photo_path ? __('ui.change_photo') : __('ui.add_photo') }}</x-ui.button>
+                    </form>
+                    @if ($student->photo_path)
+                        <form method="POST" action="{{ route('tenant.students.photo.destroy', $student) }}">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="redirect_to" value="profile" />
+                            <button type="submit" class="text-sm font-semibold text-danger-600">{{ __('ui.remove_photo') }}</button>
+                        </form>
+                    @endif
+                </div>
+            </div>
             <dl class="grid grid-cols-2 gap-3 text-sm">
                 <div><dt class="text-muted">{{ __('ui.gender') }}</dt><dd>{{ $student->gender ? __('ui.gender_'.$student->gender) : '—' }}</dd></div>
                 <div><dt class="text-muted">{{ __('ui.date_of_birth') }}</dt><dd>{{ optional($student->date_of_birth)->format('Y-m-d') ?: '—' }}</dd></div>

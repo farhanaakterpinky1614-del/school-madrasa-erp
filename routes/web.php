@@ -45,6 +45,7 @@ use App\Http\Controllers\Tenant\Students\EnrollmentController as TenantEnrollmen
 use App\Http\Controllers\Tenant\Students\TransferController as TenantTransferController;
 use App\Http\Controllers\Tenant\Students\PromotionController as TenantPromotionController;
 use App\Http\Controllers\Tenant\Students\IdCardController as TenantIdCardController;
+use App\Http\Controllers\Tenant\Students\StudentPhotoController as TenantStudentPhotoController;
 use App\Http\Controllers\Tenant\Students\StudentImportController as TenantStudentImportController;
 use App\Http\Controllers\Tenant\Admissions\FormTemplateController as TenantAdmissionFormController;
 use App\Http\Controllers\Tenant\Admissions\AdmissionSessionController as TenantAdmissionSessionController;
@@ -337,6 +338,8 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
             Route::post('/students/{student}/alumni', [TenantStudentController::class, 'markAlumni'])->name('students.alumni');
             Route::post('/students/{student}/documents', [TenantStudentDocumentController::class, 'store'])->name('students.documents.store');
             Route::delete('/students/{student}/documents/{document}', [TenantStudentDocumentController::class, 'destroy'])->name('students.documents.destroy');
+            Route::post('/students/{student}/photo', [TenantStudentPhotoController::class, 'store'])->name('students.photo.store');
+            Route::delete('/students/{student}/photo', [TenantStudentPhotoController::class, 'destroy'])->name('students.photo.destroy');
             Route::post('/students/{student}/guardians', [TenantGuardianController::class, 'attach'])->name('students.guardians.attach');
             Route::get('/students/{student}/enrollments/create', [TenantEnrollmentController::class, 'create'])->name('students.enrollments.create');
             Route::post('/students/{student}/enrollments', [TenantEnrollmentController::class, 'store'])->name('students.enrollments.store');
@@ -346,6 +349,7 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
             Route::post('/students/{student}/promotions', [TenantPromotionController::class, 'store'])->name('students.promotions.store');
         });
         Route::middleware('permission:students.student.view')->group(function () {
+            Route::get('/students/{student}/photo', [TenantStudentPhotoController::class, 'show'])->name('students.photo.show');
             Route::get('/students/{student}/id-card', [TenantIdCardController::class, 'show'])->name('students.id-card');
             Route::get('/students/{student}', [TenantStudentController::class, 'show'])->name('students.show');
         });
