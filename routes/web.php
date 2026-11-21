@@ -60,6 +60,17 @@ use App\Http\Controllers\Tenant\Hr\LeaveTypeController as TenantLeaveTypeControl
 use App\Http\Controllers\Tenant\Hr\LeaveRequestController as TenantLeaveRequestController;
 use App\Http\Controllers\Tenant\Hr\SalaryStructureController as TenantSalaryStructureController;
 use App\Http\Controllers\Tenant\Hr\PayrollController as TenantPayrollController;
+use App\Http\Controllers\Tenant\Academics\RoomController as TenantRoomController;
+use App\Http\Controllers\Tenant\Academics\PeriodController as TenantPeriodController;
+use App\Http\Controllers\Tenant\Academics\RoutineController as TenantRoutineController;
+use App\Http\Controllers\Tenant\Academics\TeacherRoutineController as TenantTeacherRoutineController;
+use App\Http\Controllers\Tenant\Academics\SubjectOfferingController as TenantSubjectOfferingController;
+use App\Http\Controllers\Tenant\Academics\SyllabusController as TenantSyllabusController;
+use App\Http\Controllers\Tenant\Academics\LessonPlanController as TenantLessonPlanController;
+use App\Http\Controllers\Tenant\Academics\HomeworkController as TenantHomeworkController;
+use App\Http\Controllers\Tenant\Academics\ClassworkController as TenantClassworkController;
+use App\Http\Controllers\Tenant\Academics\LearningMaterialController as TenantLearningMaterialController;
+use App\Http\Controllers\Tenant\Academics\AcademicReportController as TenantAcademicReportController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -473,6 +484,109 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
             Route::post('/payroll', [TenantPayrollController::class, 'store'])->name('payroll.store');
             Route::post('/payroll/{payroll}/process', [TenantPayrollController::class, 'process'])->name('payroll.process');
             Route::post('/payroll/{payroll}/paid', [TenantPayrollController::class, 'markPaid'])->name('payroll.paid');
+        });
+
+        // Phase 07 — Academic Management
+        Route::middleware('permission:academics.room.view')->group(function () {
+            Route::get('/rooms', [TenantRoomController::class, 'index'])->name('rooms.index');
+        });
+        Route::middleware('permission:academics.room.manage')->group(function () {
+            Route::get('/rooms/create', [TenantRoomController::class, 'create'])->name('rooms.create');
+            Route::post('/rooms', [TenantRoomController::class, 'store'])->name('rooms.store');
+            Route::get('/rooms/{room}/edit', [TenantRoomController::class, 'edit'])->name('rooms.edit');
+            Route::put('/rooms/{room}', [TenantRoomController::class, 'update'])->name('rooms.update');
+            Route::delete('/rooms/{room}', [TenantRoomController::class, 'destroy'])->name('rooms.destroy');
+        });
+
+        Route::middleware('permission:academics.period.view')->group(function () {
+            Route::get('/periods', [TenantPeriodController::class, 'index'])->name('periods.index');
+        });
+        Route::middleware('permission:academics.period.manage')->group(function () {
+            Route::get('/periods/create', [TenantPeriodController::class, 'create'])->name('periods.create');
+            Route::post('/periods', [TenantPeriodController::class, 'store'])->name('periods.store');
+            Route::get('/periods/{period}/edit', [TenantPeriodController::class, 'edit'])->name('periods.edit');
+            Route::put('/periods/{period}', [TenantPeriodController::class, 'update'])->name('periods.update');
+            Route::delete('/periods/{period}', [TenantPeriodController::class, 'destroy'])->name('periods.destroy');
+        });
+
+        Route::middleware('permission:academics.routine.view')->group(function () {
+            Route::get('/routines', [TenantRoutineController::class, 'index'])->name('routines.index');
+            Route::get('/teacher-routines', [TenantTeacherRoutineController::class, 'index'])->name('teacher-routines.index');
+        });
+        Route::middleware('permission:academics.routine.manage')->group(function () {
+            Route::get('/routines/create', [TenantRoutineController::class, 'create'])->name('routines.create');
+            Route::post('/routines', [TenantRoutineController::class, 'store'])->name('routines.store');
+            Route::delete('/routines/{routine}', [TenantRoutineController::class, 'destroy'])->name('routines.destroy');
+        });
+
+        Route::middleware('permission:academics.subject.view')->group(function () {
+            Route::get('/subject-offerings', [TenantSubjectOfferingController::class, 'index'])->name('subject-offerings.index');
+        });
+        Route::middleware('permission:academics.subject.manage')->group(function () {
+            Route::get('/subject-offerings/create', [TenantSubjectOfferingController::class, 'create'])->name('subject-offerings.create');
+            Route::post('/subject-offerings', [TenantSubjectOfferingController::class, 'store'])->name('subject-offerings.store');
+            Route::put('/subject-offerings/{offering}', [TenantSubjectOfferingController::class, 'update'])->name('subject-offerings.update');
+            Route::delete('/subject-offerings/{offering}', [TenantSubjectOfferingController::class, 'destroy'])->name('subject-offerings.destroy');
+        });
+
+        Route::middleware('permission:academics.syllabus.view')->group(function () {
+            Route::get('/syllabi', [TenantSyllabusController::class, 'index'])->name('syllabi.index');
+            Route::get('/syllabi/{syllabus}', [TenantSyllabusController::class, 'show'])->name('syllabi.show');
+        });
+        Route::middleware('permission:academics.syllabus.manage')->group(function () {
+            Route::get('/syllabi-create', [TenantSyllabusController::class, 'create'])->name('syllabi.create');
+            Route::post('/syllabi', [TenantSyllabusController::class, 'store'])->name('syllabi.store');
+            Route::get('/syllabi/{syllabus}/edit', [TenantSyllabusController::class, 'edit'])->name('syllabi.edit');
+            Route::put('/syllabi/{syllabus}', [TenantSyllabusController::class, 'update'])->name('syllabi.update');
+            Route::delete('/syllabi/{syllabus}', [TenantSyllabusController::class, 'destroy'])->name('syllabi.destroy');
+            Route::post('/syllabi/{syllabus}/topics', [TenantSyllabusController::class, 'storeTopic'])->name('syllabi.topics.store');
+            Route::delete('/syllabi/{syllabus}/topics/{topic}', [TenantSyllabusController::class, 'destroyTopic'])->name('syllabi.topics.destroy');
+        });
+
+        Route::middleware('permission:academics.lesson_plan.view')->group(function () {
+            Route::get('/lesson-plans', [TenantLessonPlanController::class, 'index'])->name('lesson-plans.index');
+        });
+        Route::middleware('permission:academics.lesson_plan.manage')->group(function () {
+            Route::get('/lesson-plans/create', [TenantLessonPlanController::class, 'create'])->name('lesson-plans.create');
+            Route::post('/lesson-plans', [TenantLessonPlanController::class, 'store'])->name('lesson-plans.store');
+            Route::get('/lesson-plans/{lesson_plan}/edit', [TenantLessonPlanController::class, 'edit'])->name('lesson-plans.edit');
+            Route::put('/lesson-plans/{lesson_plan}', [TenantLessonPlanController::class, 'update'])->name('lesson-plans.update');
+            Route::delete('/lesson-plans/{lesson_plan}', [TenantLessonPlanController::class, 'destroy'])->name('lesson-plans.destroy');
+        });
+
+        Route::middleware('permission:academics.homework.view')->group(function () {
+            Route::get('/homework', [TenantHomeworkController::class, 'index'])->name('homework.index');
+        });
+        Route::middleware('permission:academics.homework.manage')->group(function () {
+            Route::get('/homework/create', [TenantHomeworkController::class, 'create'])->name('homework.create');
+            Route::post('/homework', [TenantHomeworkController::class, 'store'])->name('homework.store');
+            Route::get('/homework/{homework}/edit', [TenantHomeworkController::class, 'edit'])->name('homework.edit');
+            Route::put('/homework/{homework}', [TenantHomeworkController::class, 'update'])->name('homework.update');
+            Route::delete('/homework/{homework}', [TenantHomeworkController::class, 'destroy'])->name('homework.destroy');
+        });
+
+        Route::middleware('permission:academics.classwork.view')->group(function () {
+            Route::get('/classwork', [TenantClassworkController::class, 'index'])->name('classwork.index');
+        });
+        Route::middleware('permission:academics.classwork.manage')->group(function () {
+            Route::get('/classwork/create', [TenantClassworkController::class, 'create'])->name('classwork.create');
+            Route::post('/classwork', [TenantClassworkController::class, 'store'])->name('classwork.store');
+            Route::get('/classwork/{classwork}/edit', [TenantClassworkController::class, 'edit'])->name('classwork.edit');
+            Route::put('/classwork/{classwork}', [TenantClassworkController::class, 'update'])->name('classwork.update');
+            Route::delete('/classwork/{classwork}', [TenantClassworkController::class, 'destroy'])->name('classwork.destroy');
+        });
+
+        Route::middleware('permission:academics.material.view')->group(function () {
+            Route::get('/materials', [TenantLearningMaterialController::class, 'index'])->name('materials.index');
+        });
+        Route::middleware('permission:academics.material.manage')->group(function () {
+            Route::get('/materials/create', [TenantLearningMaterialController::class, 'create'])->name('materials.create');
+            Route::post('/materials', [TenantLearningMaterialController::class, 'store'])->name('materials.store');
+            Route::delete('/materials/{material}', [TenantLearningMaterialController::class, 'destroy'])->name('materials.destroy');
+        });
+
+        Route::middleware('permission:academics.report.view')->group(function () {
+            Route::get('/academic-reports', [TenantAcademicReportController::class, 'index'])->name('academic-reports.index');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
