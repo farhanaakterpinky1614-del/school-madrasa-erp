@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\Academics\Services\DemoStructureProvisioner;
+use Modules\Students\Services\DemoStudentProvisioner;
 use Modules\Tenancy\Services\TenantRegistrar;
 
 class DemoTenantSeeder extends Seeder
@@ -34,5 +35,6 @@ class DemoTenantSeeder extends Seeder
         ]);
 
         app(DemoStructureProvisioner::class)->provision($registered['tenant']);
+        app(DemoStudentProvisioner::class)->provision($registered['tenant']);
     }
 }

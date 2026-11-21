@@ -38,6 +38,18 @@ use App\Http\Controllers\Tenant\Setup\SectionController as TenantSectionControll
 use App\Http\Controllers\Tenant\Setup\ShiftController as TenantShiftController;
 use App\Http\Controllers\Tenant\Setup\SubjectController as TenantSubjectController;
 use App\Http\Controllers\Tenant\UserController as TenantUserController;
+use App\Http\Controllers\Tenant\Students\StudentController as TenantStudentController;
+use App\Http\Controllers\Tenant\Students\GuardianController as TenantGuardianController;
+use App\Http\Controllers\Tenant\Students\StudentDocumentController as TenantStudentDocumentController;
+use App\Http\Controllers\Tenant\Students\EnrollmentController as TenantEnrollmentController;
+use App\Http\Controllers\Tenant\Students\TransferController as TenantTransferController;
+use App\Http\Controllers\Tenant\Students\PromotionController as TenantPromotionController;
+use App\Http\Controllers\Tenant\Students\IdCardController as TenantIdCardController;
+use App\Http\Controllers\Tenant\Students\StudentImportController as TenantStudentImportController;
+use App\Http\Controllers\Tenant\Admissions\FormTemplateController as TenantAdmissionFormController;
+use App\Http\Controllers\Tenant\Admissions\AdmissionSessionController as TenantAdmissionSessionController;
+use App\Http\Controllers\Tenant\Admissions\ApplicationController as TenantApplicationController;
+use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +77,21 @@ Route::get('/home', function () {
 })->name('home');
 
 Route::get('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
+
+/*
+|--------------------------------------------------------------------------
+| Public online admission (rate limited)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('apply/{tenantSlug}')
+    ->name('public.admissions.')
+    ->group(function () {
+        Route::get('/{sessionSlug}', [PublicAdmissionController::class, 'show'])->name('show');
+        Route::post('/{sessionSlug}', [PublicAdmissionController::class, 'store'])
+            ->middleware('throttle:10,1')
+            ->name('store');
+        Route::get('/{sessionSlug}/thanks/{applicationNumber}', [PublicAdmissionController::class, 'thanks'])->name('thanks');
+    });
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -280,6 +307,74 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
             Route::get('/calendar/{calendar}/edit', [TenantCalendarEventController::class, 'edit'])->name('calendar.edit');
             Route::put('/calendar/{calendar}', [TenantCalendarEventController::class, 'update'])->name('calendar.update');
             Route::delete('/calendar/{calendar}', [TenantCalendarEventController::class, 'destroy'])->name('calendar.destroy');
+        });
+
+        // Phase 05 — Students & admissions (static paths before {student}/{application})
+        Route::middleware('permission:students.student.view')->group(function () {
+            Route::get('/students', [TenantStudentController::class, 'index'])->name('students.index');
+            Route::get('/guardians', [TenantGuardianController::class, 'index'])->name('guardians.index');
+            Route::get('/transfers', [TenantTransferController::class, 'index'])->name('transfers.index');
+            Route::get('/promotions', [TenantPromotionController::class, 'index'])->name('promotions.index');
+        });
+        Route::middleware('permission:students.student.create')->group(function () {
+            Route::get('/students/create', [TenantStudentController::class, 'create'])->name('students.create');
+            Route::post('/students', [TenantStudentController::class, 'store'])->name('students.store');
+            Route::get('/students/import', [TenantStudentImportController::class, 'create'])->name('students.import.create');
+            Route::post('/students/import/preview', [TenantStudentImportController::class, 'preview'])->name('students.import.preview');
+            Route::get('/students/import/{batch}', [TenantStudentImportController::class, 'show'])->name('students.import.show');
+            Route::post('/students/import/{batch}/commit', [TenantStudentImportController::class, 'commit'])->name('students.import.commit');
+            Route::get('/guardians/create', [TenantGuardianController::class, 'create'])->name('guardians.create');
+            Route::post('/guardians', [TenantGuardianController::class, 'store'])->name('guardians.store');
+            Route::get('/offline-admission', [TenantApplicationController::class, 'offlineCreate'])->name('applications.offline.create');
+            Route::post('/offline-admission', [TenantApplicationController::class, 'offlineStore'])->name('applications.offline.store');
+        });
+        Route::middleware('permission:students.student.update')->group(function () {
+            Route::get('/guardians/{guardian}/edit', [TenantGuardianController::class, 'edit'])->name('guardians.edit');
+            Route::put('/guardians/{guardian}', [TenantGuardianController::class, 'update'])->name('guardians.update');
+            Route::get('/students/{student}/edit', [TenantStudentController::class, 'edit'])->name('students.edit');
+            Route::put('/students/{student}', [TenantStudentController::class, 'update'])->name('students.update');
+            Route::post('/students/{student}/withdraw', [TenantStudentController::class, 'withdraw'])->name('students.withdraw');
+            Route::post('/students/{student}/alumni', [TenantStudentController::class, 'markAlumni'])->name('students.alumni');
+            Route::post('/students/{student}/documents', [TenantStudentDocumentController::class, 'store'])->name('students.documents.store');
+            Route::delete('/students/{student}/documents/{document}', [TenantStudentDocumentController::class, 'destroy'])->name('students.documents.destroy');
+            Route::post('/students/{student}/guardians', [TenantGuardianController::class, 'attach'])->name('students.guardians.attach');
+            Route::get('/students/{student}/enrollments/create', [TenantEnrollmentController::class, 'create'])->name('students.enrollments.create');
+            Route::post('/students/{student}/enrollments', [TenantEnrollmentController::class, 'store'])->name('students.enrollments.store');
+            Route::get('/students/{student}/transfers/create', [TenantTransferController::class, 'create'])->name('students.transfers.create');
+            Route::post('/students/{student}/transfers', [TenantTransferController::class, 'store'])->name('students.transfers.store');
+            Route::get('/students/{student}/promotions/create', [TenantPromotionController::class, 'create'])->name('students.promotions.create');
+            Route::post('/students/{student}/promotions', [TenantPromotionController::class, 'store'])->name('students.promotions.store');
+        });
+        Route::middleware('permission:students.student.view')->group(function () {
+            Route::get('/students/{student}/id-card', [TenantIdCardController::class, 'show'])->name('students.id-card');
+            Route::get('/students/{student}', [TenantStudentController::class, 'show'])->name('students.show');
+        });
+
+        Route::middleware('permission:admissions.application.view')->group(function () {
+            Route::get('/admission-forms', [TenantAdmissionFormController::class, 'index'])->name('admission-forms.index');
+            Route::get('/admission-sessions', [TenantAdmissionSessionController::class, 'index'])->name('admission-sessions.index');
+            Route::get('/applications', [TenantApplicationController::class, 'index'])->name('applications.index');
+        });
+        Route::middleware('permission:admissions.application.manage')->group(function () {
+            Route::get('/admission-forms/create', [TenantAdmissionFormController::class, 'create'])->name('admission-forms.create');
+            Route::post('/admission-forms', [TenantAdmissionFormController::class, 'store'])->name('admission-forms.store');
+            Route::get('/admission-forms/{admission_form}/edit', [TenantAdmissionFormController::class, 'edit'])->name('admission-forms.edit');
+            Route::put('/admission-forms/{admission_form}', [TenantAdmissionFormController::class, 'update'])->name('admission-forms.update');
+            Route::post('/admission-forms/{admission_form}/fields', [TenantAdmissionFormController::class, 'storeField'])->name('admission-forms.fields.store');
+            Route::delete('/admission-forms/{admission_form}/fields/{field}', [TenantAdmissionFormController::class, 'destroyField'])->name('admission-forms.fields.destroy');
+
+            Route::get('/admission-sessions/create', [TenantAdmissionSessionController::class, 'create'])->name('admission-sessions.create');
+            Route::post('/admission-sessions', [TenantAdmissionSessionController::class, 'store'])->name('admission-sessions.store');
+            Route::get('/admission-sessions/{admission_session}/edit', [TenantAdmissionSessionController::class, 'edit'])->name('admission-sessions.edit');
+            Route::put('/admission-sessions/{admission_session}', [TenantAdmissionSessionController::class, 'update'])->name('admission-sessions.update');
+
+            Route::post('/applications/{application}/review', [TenantApplicationController::class, 'review'])->name('applications.review');
+            Route::post('/applications/{application}/approve', [TenantApplicationController::class, 'approve'])->name('applications.approve');
+            Route::post('/applications/{application}/reject', [TenantApplicationController::class, 'reject'])->name('applications.reject');
+            Route::post('/applications/{application}/enroll', [TenantApplicationController::class, 'enroll'])->name('applications.enroll');
+        });
+        Route::middleware('permission:admissions.application.view')->group(function () {
+            Route::get('/applications/{application}', [TenantApplicationController::class, 'show'])->name('applications.show');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
