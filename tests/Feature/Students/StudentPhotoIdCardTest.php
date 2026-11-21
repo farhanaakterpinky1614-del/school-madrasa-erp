@@ -44,6 +44,8 @@ it('uploads a private tenant-scoped student photo and serves it on the id card',
         ->assertSee($student->full_name, false)
         ->assertSee(route('tenant.students.photo.show', $student), false)
         ->assertSee(__('ui.change_photo'), false)
+        ->assertSee(__('ui.id_card_signature'), false)
+        ->assertSee('sme-id-card', false)
         ->assertDontSee(__('ui.photo_placeholder'), false);
 });
 
