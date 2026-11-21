@@ -18,6 +18,7 @@
     </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @stack('head')
 </head>
 <body
     class="h-full text-[color:var(--sme-text)]"
@@ -25,15 +26,19 @@
     x-init="$store.theme.init()"
 >
     <div class="min-h-full lg:flex">
-        @include('layouts.partials.sidebar')
+        <div class="print:hidden">
+            @include('layouts.partials.sidebar')
+        </div>
 
-        <div class="relative flex min-h-screen min-w-0 flex-1 flex-col transition-sidebar"
+        <div class="relative flex min-h-screen min-w-0 flex-1 flex-col transition-sidebar print:!ms-0"
              :class="$store.sidebar.collapsed ? 'lg:ms-20' : 'lg:ms-64'">
-            @include('layouts.partials.topbar')
+            <div class="print:hidden">
+                @include('layouts.partials.topbar')
+            </div>
 
-            <main class="relative flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <main class="relative flex-1 px-4 py-6 sm:px-6 lg:px-8 print:p-0">
                 @hasSection('page-header')
-                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
                         @yield('page-header')
                     </div>
                 @endif
@@ -70,7 +75,7 @@
     <div
         x-show="$store.sidebar.open && window.innerWidth < 1024"
         x-transition.opacity
-        class="fixed inset-0 z-30 bg-slate-950/45 backdrop-blur-[2px] lg:hidden"
+        class="fixed inset-0 z-30 bg-slate-950/45 backdrop-blur-[2px] lg:hidden print:hidden"
         @click="$store.sidebar.closeMobile()"
         style="display: none;"
     ></div>
