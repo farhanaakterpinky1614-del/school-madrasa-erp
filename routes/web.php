@@ -81,6 +81,11 @@ use App\Http\Controllers\Tenant\Examinations\MarksEntryController as TenantMarks
 use App\Http\Controllers\Tenant\Examinations\ResultPublishController as TenantResultPublishController;
 use App\Http\Controllers\Tenant\Examinations\GradingSchemeController as TenantGradingSchemeController;
 use App\Http\Controllers\Tenant\Examinations\MarksheetPdfController as TenantMarksheetPdfController;
+use App\Http\Controllers\Tenant\Hifz\HifzProfileController as TenantHifzProfileController;
+use App\Http\Controllers\Tenant\Hifz\HifzProgressLogController as TenantHifzProgressLogController;
+use App\Http\Controllers\Tenant\Hifz\HifzRevisionController as TenantHifzRevisionController;
+use App\Http\Controllers\Tenant\Hifz\IslamicSubjectMetaController as TenantIslamicSubjectMetaController;
+use App\Http\Controllers\Tenant\Hifz\HifzReportController as TenantHifzReportController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -660,6 +665,48 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
             Route::get('/results/pdf', [TenantMarksheetPdfController::class, 'index'])->name('results.pdf.index');
             Route::get('/results/pdf/{exam}/marksheet/{student}', [TenantMarksheetPdfController::class, 'studentMarksheet'])->name('results.pdf.marksheet');
             Route::get('/results/pdf/{exam}/class-sheet', [TenantMarksheetPdfController::class, 'classSheet'])->name('results.pdf.class');
+        });
+
+        // Hifz & Islamic education (Phase 10)
+        Route::middleware('permission:hifz.profile.view')->group(function () {
+            Route::get('/hifz/profiles', [TenantHifzProfileController::class, 'index'])->name('hifz.profiles.index');
+        });
+        Route::middleware('permission:hifz.profile.manage')->group(function () {
+            Route::get('/hifz/profiles/create', [TenantHifzProfileController::class, 'create'])->name('hifz.profiles.create');
+            Route::post('/hifz/profiles', [TenantHifzProfileController::class, 'store'])->name('hifz.profiles.store');
+            Route::delete('/hifz/profiles/{profile}', [TenantHifzProfileController::class, 'destroy'])->name('hifz.profiles.destroy');
+        });
+        Route::middleware('permission:hifz.progress.update')->group(function () {
+            Route::get('/hifz/profiles/{profile}/edit', [TenantHifzProfileController::class, 'edit'])->name('hifz.profiles.edit');
+            Route::put('/hifz/profiles/{profile}', [TenantHifzProfileController::class, 'update'])->name('hifz.profiles.update');
+        });
+        Route::middleware('permission:hifz.profile.view')->group(function () {
+            Route::get('/hifz/profiles/{profile}', [TenantHifzProfileController::class, 'show'])->name('hifz.profiles.show');
+        });
+        Route::middleware('permission:hifz.progress.view')->group(function () {
+            Route::get('/hifz/progress', [TenantHifzProgressLogController::class, 'index'])->name('hifz.progress.index');
+        });
+        Route::middleware('permission:hifz.progress.update')->group(function () {
+            Route::post('/hifz/progress', [TenantHifzProgressLogController::class, 'store'])->name('hifz.progress.store');
+            Route::delete('/hifz/progress/{log}', [TenantHifzProgressLogController::class, 'destroy'])->name('hifz.progress.destroy');
+        });
+        Route::middleware('permission:hifz.revision.view')->group(function () {
+            Route::get('/hifz/revisions', [TenantHifzRevisionController::class, 'index'])->name('hifz.revisions.index');
+        });
+        Route::middleware('permission:hifz.revision.manage')->group(function () {
+            Route::post('/hifz/revisions', [TenantHifzRevisionController::class, 'store'])->name('hifz.revisions.store');
+            Route::put('/hifz/revisions/{revision}', [TenantHifzRevisionController::class, 'update'])->name('hifz.revisions.update');
+            Route::delete('/hifz/revisions/{revision}', [TenantHifzRevisionController::class, 'destroy'])->name('hifz.revisions.destroy');
+        });
+        Route::middleware('permission:hifz.meta.manage')->group(function () {
+            Route::get('/hifz/islamic-meta', [TenantIslamicSubjectMetaController::class, 'index'])->name('hifz.meta.index');
+            Route::post('/hifz/islamic-meta', [TenantIslamicSubjectMetaController::class, 'store'])->name('hifz.meta.store');
+            Route::put('/hifz/islamic-meta/{meta}', [TenantIslamicSubjectMetaController::class, 'update'])->name('hifz.meta.update');
+            Route::delete('/hifz/islamic-meta/{meta}', [TenantIslamicSubjectMetaController::class, 'destroy'])->name('hifz.meta.destroy');
+        });
+        Route::middleware('permission:hifz.report.view')->group(function () {
+            Route::get('/hifz/reports', [TenantHifzReportController::class, 'index'])->name('hifz.reports.index');
+            Route::get('/hifz/reports/pdf', [TenantHifzReportController::class, 'pdf'])->name('hifz.reports.pdf');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
