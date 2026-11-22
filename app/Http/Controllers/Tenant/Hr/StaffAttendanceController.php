@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Tenant\Hr;
 
+use App\Core\Tenancy\CurrentTenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Modules\Hr\Models\Staff;
@@ -41,26 +43,42 @@ class StaffAttendanceController extends Controller
             'entries.*.notes' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $tenantId = app(CurrentTenant::class)->id();
+        abort_if($tenantId === null, 403);
+
+        $attendanceDate = Carbon::parse($data['attendance_date'], 'Asia/Dhaka')->toDateString();
+
         foreach ($data['entries'] as $entry) {
             $member = Staff::query()->findOrFail($entry['staff_id']);
             $this->assertTenantOwned($member);
 
-            StaffAttendance::query()->updateOrCreate(
-                [
+            $values = [
+                'status' => $entry['status'],
+                'check_in' => $entry['check_in'] ?? null,
+                'notes' => $entry['notes'] ?? null,
+                'marked_by' => $request->user()?->id,
+            ];
+
+            $record = StaffAttendance::query()
+                ->where('tenant_id', $tenantId)
+                ->where('staff_id', $member->id)
+                ->whereDate('attendance_date', $attendanceDate)
+                ->first();
+
+            if ($record) {
+                $record->update($values);
+            } else {
+                StaffAttendance::query()->create([
+                    'tenant_id' => $tenantId,
                     'staff_id' => $member->id,
-                    'attendance_date' => $data['attendance_date'],
-                ],
-                [
-                    'status' => $entry['status'],
-                    'check_in' => $entry['check_in'] ?? null,
-                    'notes' => $entry['notes'] ?? null,
-                    'marked_by' => $request->user()?->id,
-                ]
-            );
+                    'attendance_date' => $attendanceDate,
+                    ...$values,
+                ]);
+            }
         }
 
         return redirect()
-            ->route('tenant.staff-attendance.index', ['date' => $data['attendance_date']])
+            ->route('tenant.staff-attendance.index', ['date' => $attendanceDate])
             ->with('status', __('ui.attendance_saved'));
     }
 }
