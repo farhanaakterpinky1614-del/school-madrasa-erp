@@ -225,6 +225,16 @@ return [
         'hostel.allocation.view',
         'hostel.allocation.manage',
 
+        // Communications (Phase 14)
+        'communications.announcement.view',
+        'communications.announcement.manage',
+        'communications.template.view',
+        'communications.template.manage',
+        'communications.send.manage',
+        'communications.log.view',
+        'communications.settings.manage',
+        'communications.inbox.view',
+
         // Placeholder permissions used by role templates (enforced when modules ship)
         'reports.export.create',
     ],
@@ -370,6 +380,10 @@ return [
             'hostel.hostel.view',
             'hostel.room.view',
             'hostel.allocation.view',
+            'communications.announcement.view',
+            'communications.template.view',
+            'communications.log.view',
+            'communications.inbox.view',
             'reports.export.create',
         ],
         'Academic Officer' => [
@@ -481,6 +495,7 @@ return [
             'hifz.progress.update',
             'hifz.revision.view',
             'hifz.revision.manage',
+            'communications.inbox.view',
         ],
         'Accountant' => [
             'students.student.view',
@@ -563,6 +578,17 @@ return [
             'hostel.allocation.manage',
             'reports.export.create',
         ],
+        'Communications Officer' => [
+            'communications.announcement.view',
+            'communications.announcement.manage',
+            'communications.template.view',
+            'communications.template.manage',
+            'communications.send.manage',
+            'communications.log.view',
+            'communications.settings.manage',
+            'communications.inbox.view',
+            'reports.export.create',
+        ],
         'Receptionist' => [
             'students.student.view',
             'students.student.create',
@@ -573,9 +599,11 @@ return [
         ],
         'Parent' => [
             'students.student.view',
+            'communications.inbox.view',
         ],
         'Student' => [
             'students.student.view',
+            'communications.inbox.view',
         ],
     ],
 
