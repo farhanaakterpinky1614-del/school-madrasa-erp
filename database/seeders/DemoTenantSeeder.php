@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Modules\Academics\Services\DemoAcademicProvisioner;
 use Modules\Academics\Services\DemoStructureProvisioner;
 use Modules\Attendance\Services\DemoAttendanceProvisioner;
+use Modules\Examinations\Services\DemoExamProvisioner;
 use Modules\Hr\Services\DemoHrProvisioner;
 use Modules\Students\Services\DemoStudentProvisioner;
 use Modules\Tenancy\Services\TenantRegistrar;
@@ -42,5 +43,6 @@ class DemoTenantSeeder extends Seeder
         app(DemoHrProvisioner::class)->provision($registered['tenant']);
         app(DemoAcademicProvisioner::class)->provision($registered['tenant']);
         app(DemoAttendanceProvisioner::class)->provision($registered['tenant']);
+        app(DemoExamProvisioner::class)->provision($registered['tenant']);
     }
 }
