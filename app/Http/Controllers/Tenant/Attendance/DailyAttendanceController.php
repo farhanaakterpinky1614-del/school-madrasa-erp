@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Tenant\Attendance;
 
+use App\Core\Tenancy\CurrentTenant;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Tenant\Attendance\Concerns\LoadsAttendanceFormOptions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Modules\Academics\Models\AcademicYear;
@@ -89,29 +91,47 @@ class DailyAttendanceController extends Controller
         $yearId = $data['academic_year_id']
             ?? AcademicYear::query()->where('is_current', true)->value('id');
 
+        $tenantId = app(CurrentTenant::class)->id();
+        abort_if($tenantId === null, 403);
+
+        // Match unique index + date cast: date-only string avoids insert-vs-update mismatches.
+        $attendanceDate = Carbon::parse($data['attendance_date'], 'Asia/Dhaka')->toDateString();
+
         foreach ($data['entries'] as $entry) {
             $student = Student::query()->findOrFail($entry['student_id']);
             $this->assertTenantOwned($student);
 
-            StudentAttendance::query()->updateOrCreate(
-                [
+            $values = [
+                'academic_year_id' => $yearId,
+                'school_class_id' => $classId,
+                'section_id' => $sectionId,
+                'status' => $entry['status'],
+                'notes' => $entry['notes'] ?? null,
+                'marked_by' => $request->user()?->id,
+            ];
+
+            // whereDate: SQLite stores cast dates as Y-m-d H:i:s; plain equality misses on resave.
+            $record = StudentAttendance::query()
+                ->where('tenant_id', $tenantId)
+                ->where('student_id', $student->id)
+                ->whereDate('attendance_date', $attendanceDate)
+                ->first();
+
+            if ($record) {
+                $record->update($values);
+            } else {
+                StudentAttendance::query()->create([
+                    'tenant_id' => $tenantId,
                     'student_id' => $student->id,
-                    'attendance_date' => $data['attendance_date'],
-                ],
-                [
-                    'academic_year_id' => $yearId,
-                    'school_class_id' => $classId,
-                    'section_id' => $sectionId,
-                    'status' => $entry['status'],
-                    'notes' => $entry['notes'] ?? null,
-                    'marked_by' => $request->user()?->id,
-                ]
-            );
+                    'attendance_date' => $attendanceDate,
+                    ...$values,
+                ]);
+            }
         }
 
         return redirect()
             ->route('tenant.attendance.daily.index', [
-                'date' => $data['attendance_date'],
+                'date' => $attendanceDate,
                 'class_id' => $classId,
                 'section_id' => $sectionId,
             ])

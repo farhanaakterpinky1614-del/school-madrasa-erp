@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Attendance;
 
+use App\Core\Tenancy\CurrentTenant;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Tenant\Attendance\Concerns\LoadsAttendanceFormOptions;
 use Illuminate\Http\RedirectResponse;
@@ -94,32 +95,49 @@ class PeriodAttendanceController extends Controller
             403
         );
 
+        $tenantId = app(CurrentTenant::class)->id();
+        abort_if($tenantId === null, 403);
+
+        $attendanceDate = Carbon::parse($data['attendance_date'], 'Asia/Dhaka')->toDateString();
+
         foreach ($data['entries'] as $entry) {
             $student = Student::query()->findOrFail($entry['student_id']);
             $this->assertTenantOwned($student);
 
-            PeriodAttendance::query()->updateOrCreate(
-                [
+            $values = [
+                'period_id' => $routine->period_id,
+                'school_class_id' => $routine->school_class_id,
+                'section_id' => $routine->section_id,
+                'subject_id' => $routine->subject_id,
+                'staff_id' => $routine->staff_id,
+                'status' => $entry['status'],
+                'notes' => $entry['notes'] ?? null,
+                'marked_by' => $request->user()?->id,
+            ];
+
+            $record = PeriodAttendance::query()
+                ->where('tenant_id', $tenantId)
+                ->where('student_id', $student->id)
+                ->where('class_routine_id', $routine->id)
+                ->whereDate('attendance_date', $attendanceDate)
+                ->first();
+
+            if ($record) {
+                $record->update($values);
+            } else {
+                PeriodAttendance::query()->create([
+                    'tenant_id' => $tenantId,
                     'student_id' => $student->id,
                     'class_routine_id' => $routine->id,
-                    'attendance_date' => $data['attendance_date'],
-                ],
-                [
-                    'period_id' => $routine->period_id,
-                    'school_class_id' => $routine->school_class_id,
-                    'section_id' => $routine->section_id,
-                    'subject_id' => $routine->subject_id,
-                    'staff_id' => $routine->staff_id,
-                    'status' => $entry['status'],
-                    'notes' => $entry['notes'] ?? null,
-                    'marked_by' => $request->user()?->id,
-                ]
-            );
+                    'attendance_date' => $attendanceDate,
+                    ...$values,
+                ]);
+            }
         }
 
         return redirect()
             ->route('tenant.attendance.period.index', [
-                'date' => $data['attendance_date'],
+                'date' => $attendanceDate,
                 'routine_id' => $routine->id,
             ])
             ->with('status', __('ui.period_attendance_saved'));

@@ -65,6 +65,64 @@ it('marks daily student attendance via HTTP', function () {
         ->count())->toBe(count($entries));
 });
 
+it('updates daily attendance on second save without unique violation', function () {
+    $registered = $this->registerTenant([
+        'slug' => 'wf-daily-att-resave',
+        'admin_email' => 'wf-daily-att-resave@test.test',
+    ]);
+    app(DemoStructureProvisioner::class)->provision($registered['tenant']);
+    app(DemoStudentProvisioner::class)->provision($registered['tenant']);
+    app(DemoHrProvisioner::class)->provision($registered['tenant']);
+    app(DemoAcademicProvisioner::class)->provision($registered['tenant']);
+
+    $class = SchoolClass::query()->orderBy('numeric_level')->firstOrFail();
+    $section = Section::query()->where('school_class_id', $class->id)->first();
+    $enrollment = StudentEnrollment::query()
+        ->where('school_class_id', $class->id)
+        ->where('is_current', true)
+        ->firstOrFail();
+
+    $date = now('Asia/Dhaka')->toDateString();
+    $payload = [
+        'attendance_date' => $date,
+        'school_class_id' => $class->id,
+        'section_id' => $section?->id,
+        'entries' => [
+            [
+                'student_id' => $enrollment->student_id,
+                'status' => StudentAttendance::STATUS_PRESENT,
+            ],
+        ],
+    ];
+
+    $this->actingAs($registered['user'])
+        ->post(route('tenant.attendance.daily.store'), $payload)
+        ->assertRedirect();
+
+    $first = StudentAttendance::query()
+        ->where('student_id', $enrollment->student_id)
+        ->whereDate('attendance_date', $date)
+        ->firstOrFail();
+
+    $payload['entries'][0]['status'] = StudentAttendance::STATUS_ABSENT;
+    $payload['entries'][0]['notes'] = 'Updated on resave';
+
+    $this->actingAs($registered['user'])
+        ->post(route('tenant.attendance.daily.store'), $payload)
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
+
+    $rows = StudentAttendance::query()
+        ->where('student_id', $enrollment->student_id)
+        ->whereDate('attendance_date', $date)
+        ->get();
+
+    expect($rows)->toHaveCount(1);
+    expect($rows->first()->id)->toBe($first->id);
+    expect($rows->first()->status)->toBe(StudentAttendance::STATUS_ABSENT);
+    expect($rows->first()->notes)->toBe('Updated on resave');
+});
+
 it('marks period attendance for a routine slot via HTTP', function () {
     $registered = $this->registerTenant([
         'slug' => 'wf-period-att',
