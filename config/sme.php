@@ -187,12 +187,71 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Security (Phase 03) — detailed rules live in config/identity.php
+    | Security (Phase 03 + Phase 16 hardening)
     |--------------------------------------------------------------------------
     */
     'security' => [
         'session_lifetime_minutes' => (int) env('SESSION_LIFETIME', 120),
         'password_min' => (int) env('SME_PASSWORD_MIN', 8),
+        'headers_enabled' => (bool) env('SME_SECURITY_HEADERS', true),
+        /*
+         * Practical CSP for Blade + Vite + Alpine/Livewire — report-only by default
+         * so local Vite HMR / inline Alpine bootstraps are not blocked hard.
+         */
+        'csp_report_only' => (bool) env('SME_CSP_REPORT_ONLY', true),
+        'csp' => env(
+            'SME_CSP',
+            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+        ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Webhooks (Phase 16)
+    |--------------------------------------------------------------------------
+    */
+    'webhooks' => [
+        'delivery_mode' => env('SME_WEBHOOK_MODE', 'stub'), // stub|http
+        'timeout_seconds' => (int) env('SME_WEBHOOK_TIMEOUT', 5),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom domain verification (Phase 16)
+    |--------------------------------------------------------------------------
+    */
+    'domain_verification' => [
+        // dns = real DNS/HTTP checks; always_pass = tests/local convenience
+        'driver' => env('SME_DOMAIN_VERIFY_DRIVER', 'dns'),
+        'allow_live_http' => (bool) env('SME_DOMAIN_VERIFY_HTTP', false),
+        'txt_overrides' => [],
+        'http_overrides' => [],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Premium UI pack hook points (Phase 16) — flags only, no full redesign
+    |--------------------------------------------------------------------------
+    */
+    'ui_packs' => [
+        'default' => 'indigo_slate',
+        'packs' => [
+            'indigo_slate' => [
+                'label' => 'Indigo / Slate',
+                'description' => 'Default SME brand — indigo primary on slate surfaces.',
+                'premium' => false,
+            ],
+            'emerald_slate' => [
+                'label' => 'Emerald Accent',
+                'description' => 'Premium accent pack hook (emerald highlights).',
+                'premium' => true,
+            ],
+            'navy_gold' => [
+                'label' => 'Navy & Gold',
+                'description' => 'Premium ceremonial pack hook for enterprise branding.',
+                'premium' => true,
+            ],
+        ],
     ],
 
 ];

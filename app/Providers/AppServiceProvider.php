@@ -50,5 +50,10 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('identity.rate_limits.password_reset', 3))
                 ->by(strtolower((string) $request->input('email')).'|'.$request->ip());
         });
+
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute((int) config('identity.rate_limits.api', 60))
+                ->by(optional($request->user())->id ?: $request->ip());
+        });
     }
 }

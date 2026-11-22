@@ -13,6 +13,8 @@ use Illuminate\View\View;
 use Modules\Academics\Models\AcademicYear;
 use Modules\Attendance\Models\StudentAttendance;
 use Modules\Attendance\Services\TeacherAttendanceScope;
+use Modules\Integrations\Models\WebhookSubscription;
+use Modules\Integrations\Services\WebhookDispatcher;
 use Modules\Students\Models\Student;
 use Modules\Students\Models\StudentEnrollment;
 
@@ -127,6 +129,16 @@ class DailyAttendanceController extends Controller
                     ...$values,
                 ]);
             }
+        }
+
+        $tenant = app(CurrentTenant::class)->get();
+        if ($tenant) {
+            app(WebhookDispatcher::class)->dispatch($tenant, WebhookSubscription::EVENT_ATTENDANCE_MARKED, [
+                'attendance_date' => $attendanceDate,
+                'school_class_id' => $classId,
+                'section_id' => $sectionId,
+                'marked_count' => count($data['entries']),
+            ]);
         }
 
         return redirect()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Core\Tenancy\CurrentTenant;
+use App\Exceptions\QuotaExceededException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class UsageController extends Controller
     }
 
     /**
-     * Demo stub: allow tenant admin to set counters until real modules exist.
+     * Demo setter with hard-quota enforcement on write.
      */
     public function updateStub(Request $request, CurrentTenant $currentTenant, UsageTracker $usage): RedirectResponse
     {
@@ -36,10 +37,23 @@ class UsageController extends Controller
             'storage_mb' => ['required', 'integer', 'min:0'],
         ]);
 
-        $usage->set($tenant, TenantUsageMetric::STUDENTS, $data['students']);
-        $usage->set($tenant, TenantUsageMetric::STAFF, $data['staff']);
-        $usage->set($tenant, TenantUsageMetric::STORAGE_MB, $data['storage_mb']);
+        foreach ([
+            TenantUsageMetric::STUDENTS => $data['students'],
+            TenantUsageMetric::STAFF => $data['staff'],
+            TenantUsageMetric::STORAGE_MB => $data['storage_mb'],
+        ] as $metric => $value) {
+            $limit = $usage->limitFor($tenant, $metric);
+            if ($limit !== null && $value > $limit) {
+                throw new QuotaExceededException(
+                    $metric,
+                    $usage->get($tenant, $metric),
+                    $limit,
+                    "Cannot set {$metric} to {$value}; plan limit is {$limit}.",
+                );
+            }
+            $usage->set($tenant, $metric, $value);
+        }
 
-        return back()->with('status', 'Usage counters updated (stub).');
+        return back()->with('status', 'Usage counters updated (quota-checked).');
     }
 }

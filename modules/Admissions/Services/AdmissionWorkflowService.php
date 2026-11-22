@@ -4,10 +4,15 @@ namespace Modules\Admissions\Services;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Admissions\Models\AdmissionApplication;
+use Modules\Integrations\Models\WebhookSubscription;
+use Modules\Integrations\Services\WebhookDispatcher;
+use Modules\Platform\Models\TenantUsageMetric;
+use Modules\Platform\Services\UsageTracker;
 use Modules\Students\Models\Guardian;
 use Modules\Students\Models\Student;
 use Modules\Students\Services\EnrollmentService;
 use Modules\Students\Services\StudentIdGenerator;
+use Modules\Tenancy\Models\Tenant;
 
 class AdmissionWorkflowService
 {
@@ -25,7 +30,10 @@ class AdmissionWorkflowService
             'reviewed_by' => $userId ?? $application->reviewed_by,
         ]);
 
-        return $application->fresh();
+        $fresh = $application->fresh();
+        $this->emitStatusWebhook($fresh);
+
+        return $fresh;
     }
 
     public function approve(AdmissionApplication $application, ?int $userId = null, ?string $notes = null): AdmissionApplication
@@ -42,7 +50,10 @@ class AdmissionWorkflowService
             'decision_notes' => $notes,
         ]);
 
-        return $application->fresh();
+        $fresh = $application->fresh();
+        $this->emitStatusWebhook($fresh);
+
+        return $fresh;
     }
 
     public function reject(AdmissionApplication $application, ?int $userId = null, ?string $notes = null): AdmissionApplication
@@ -60,7 +71,10 @@ class AdmissionWorkflowService
             'decision_notes' => $notes,
         ]);
 
-        return $application->fresh();
+        $fresh = $application->fresh();
+        $this->emitStatusWebhook($fresh);
+
+        return $fresh;
     }
 
     /**
@@ -73,6 +87,11 @@ class AdmissionWorkflowService
         $this->assertStatus($application, [AdmissionApplication::STATUS_APPROVED]);
 
         return DB::transaction(function () use ($application, $enrollment, $userId) {
+            $tenant = Tenant::query()->find($application->tenant_id);
+            if ($tenant) {
+                app(UsageTracker::class)->assertWithinQuota($tenant, TenantUsageMetric::STUDENTS);
+            }
+
             $student = Student::query()->create([
                 'student_code' => $this->ids->nextStudentCode(),
                 'admission_number' => $this->ids->nextAdmissionNumber(),
@@ -89,6 +108,10 @@ class AdmissionWorkflowService
                 'custom_fields' => $application->form_payload,
             ]);
             $student->update(['qr_payload' => $this->ids->qrPayload($student)]);
+
+            if ($tenant) {
+                app(UsageTracker::class)->increment($tenant, TenantUsageMetric::STUDENTS);
+            }
 
             if ($application->guardian_name) {
                 $guardian = Guardian::query()->create([
@@ -119,8 +142,26 @@ class AdmissionWorkflowService
                 'reviewed_at' => $application->reviewed_at ?? now(),
             ]);
 
-            return $application->fresh(['student']);
+            $fresh = $application->fresh(['student']);
+            $this->emitStatusWebhook($fresh);
+
+            return $fresh;
         });
+    }
+
+    protected function emitStatusWebhook(AdmissionApplication $application): void
+    {
+        $tenant = Tenant::query()->find($application->tenant_id);
+        if (! $tenant) {
+            return;
+        }
+
+        app(WebhookDispatcher::class)->dispatch($tenant, WebhookSubscription::EVENT_ADMISSION_STATUS, [
+            'application_id' => $application->id,
+            'application_number' => $application->application_number,
+            'status' => $application->status,
+            'student_id' => $application->student_id,
+        ]);
     }
 
     /**

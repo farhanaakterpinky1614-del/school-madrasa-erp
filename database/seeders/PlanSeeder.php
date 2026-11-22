@@ -28,6 +28,8 @@ class PlanSeeder extends Seeder
                     'module_hifz' => true,
                     'custom_domain' => false,
                     'api_access' => false,
+                    'webhooks' => false,
+                    'premium_ui_packs' => false,
                 ],
             ],
             [
@@ -46,7 +48,9 @@ class PlanSeeder extends Seeder
                     'module_transport' => true,
                     'module_hifz' => true,
                     'custom_domain' => false,
-                    'api_access' => false,
+                    'api_access' => true,
+                    'webhooks' => true,
+                    'premium_ui_packs' => true,
                 ],
             ],
             [
@@ -66,6 +70,8 @@ class PlanSeeder extends Seeder
                     'module_hifz' => true,
                     'custom_domain' => true,
                     'api_access' => true,
+                    'webhooks' => true,
+                    'premium_ui_packs' => true,
                 ],
             ],
         ];

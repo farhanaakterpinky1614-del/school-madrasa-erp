@@ -2,6 +2,7 @@
 
 namespace Modules\Platform\Services;
 
+use App\Exceptions\QuotaExceededException;
 use Modules\Platform\Models\TenantUsageMetric;
 use Modules\Tenancy\Models\Tenant;
 
@@ -15,6 +16,21 @@ class UsageTracker
         TenantUsageMetric::STAFF,
         TenantUsageMetric::STORAGE_MB,
     ];
+
+    /**
+     * Metric key → plan feature key.
+     *
+     * @var array<string, string>
+     */
+    public const LIMIT_MAP = [
+        TenantUsageMetric::STUDENTS => 'max_students',
+        TenantUsageMetric::STAFF => 'max_staff',
+        TenantUsageMetric::STORAGE_MB => 'max_storage_mb',
+    ];
+
+    public function __construct(
+        protected FeatureAccess $features,
+    ) {}
 
     public function initializeForTenant(Tenant $tenant): void
     {
@@ -59,23 +75,80 @@ class UsageTracker
         return $metric->refresh();
     }
 
-    /**
-     * @return array<string, array{current: int, limit: int|null}>
-     */
-    public function summary(Tenant $tenant, FeatureAccess $features): array
+    public function limitFor(Tenant $tenant, string $metricKey): ?int
     {
-        $limitMap = [
-            TenantUsageMetric::STUDENTS => 'max_students',
-            TenantUsageMetric::STAFF => 'max_staff',
-            TenantUsageMetric::STORAGE_MB => 'max_storage_mb',
-        ];
+        $featureKey = self::LIMIT_MAP[$metricKey] ?? null;
 
+        if ($featureKey === null) {
+            return null;
+        }
+
+        return $this->features->limit($tenant, $featureKey);
+    }
+
+    /**
+     * Soft check: would adding $by exceed the plan hard quota?
+     */
+    public function wouldExceed(Tenant $tenant, string $metricKey, int $by = 1): bool
+    {
+        $limit = $this->limitFor($tenant, $metricKey);
+
+        if ($limit === null) {
+            return false; // unlimited
+        }
+
+        return ($this->get($tenant, $metricKey) + $by) > $limit;
+    }
+
+    /**
+     * Hard quota enforcement — throws QuotaExceededException when over plan limit.
+     *
+     * @throws QuotaExceededException
+     */
+    public function assertWithinQuota(Tenant $tenant, string $metricKey, int $by = 1): void
+    {
+        if (! $this->wouldExceed($tenant, $metricKey, $by)) {
+            return;
+        }
+
+        $limit = $this->limitFor($tenant, $metricKey);
+        $current = $this->get($tenant, $metricKey);
+
+        throw new QuotaExceededException(
+            $metricKey,
+            $current,
+            $limit,
+            "Plan quota exceeded for {$metricKey} (current {$current}, limit {$limit}).",
+        );
+    }
+
+    /**
+     * Assert + increment in one step for create flows.
+     *
+     * @throws QuotaExceededException
+     */
+    public function consume(Tenant $tenant, string $metricKey, int $by = 1): TenantUsageMetric
+    {
+        $this->assertWithinQuota($tenant, $metricKey, $by);
+
+        return $this->increment($tenant, $metricKey, $by);
+    }
+
+    /**
+     * @return array<string, array{current: int, limit: int|null, remaining: int|null, exceeded: bool}>
+     */
+    public function summary(Tenant $tenant, ?FeatureAccess $features = null): array
+    {
         $out = [];
 
         foreach (self::DEFAULT_METRICS as $key) {
+            $current = $this->get($tenant, $key);
+            $limit = $this->limitFor($tenant, $key);
             $out[$key] = [
-                'current' => $this->get($tenant, $key),
-                'limit' => $features->limit($tenant, $limitMap[$key]),
+                'current' => $current,
+                'limit' => $limit,
+                'remaining' => $limit === null ? null : max(0, $limit - $current),
+                'exceeded' => $limit !== null && $current > $limit,
             ];
         }
 

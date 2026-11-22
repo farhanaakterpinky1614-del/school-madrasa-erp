@@ -1,14 +1,19 @@
 @php
     use App\Core\Support\Locale;
+    use App\Core\Tenancy\CurrentTenant;
+    use Modules\Platform\Services\ThemePack;
     $dir = Locale::direction();
     $locale = app()->getLocale();
+    $tenant = app(CurrentTenant::class)->get();
+    $themePackClass = $tenant ? app(ThemePack::class)->bodyClass($tenant) : 'sme-theme-pack-indigo_slate';
 @endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}" class="h-full">
+<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}" class="h-full" data-theme-pack="{{ str_replace('sme-theme-pack-', '', $themePackClass) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <title>@yield('title', __('ui.app_name')) — {{ config('app.name') }}</title>
     <script>
         (function () {
@@ -21,7 +26,7 @@
     @stack('head')
 </head>
 <body
-    class="h-full text-[color:var(--sme-text)]"
+    class="h-full text-[color:var(--sme-text)] {{ $themePackClass }}"
     x-data
     x-init="$store.theme.init()"
 >

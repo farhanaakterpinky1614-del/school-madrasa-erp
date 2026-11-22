@@ -15,7 +15,10 @@ use App\Http\Controllers\Platform\UsageController as PlatformUsageController;
 use App\Http\Controllers\Platform\UserController as PlatformUserController;
 use App\Http\Controllers\Tenant\AuditLogController as TenantAuditLogController;
 use App\Http\Controllers\Tenant\DashboardController as TenantDashboardController;
+use App\Http\Controllers\Tenant\ApiTokenController as TenantApiTokenController;
+use App\Http\Controllers\Tenant\AppearanceController as TenantAppearanceController;
 use App\Http\Controllers\Tenant\DomainController as TenantDomainController;
+use App\Http\Controllers\Tenant\WebhookController as TenantWebhookController;
 use App\Http\Controllers\Tenant\InstitutionController as TenantInstitutionController;
 use App\Http\Controllers\Tenant\LoginHistoryController as TenantLoginHistoryController;
 use App\Http\Controllers\Tenant\MembershipController as TenantMembershipController;
@@ -989,7 +992,32 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         });
         Route::middleware('permission:settings.domains.update')->group(function () {
             Route::post('/domains', [TenantDomainController::class, 'store'])->name('domains.store');
+            Route::post('/domains/{domain}/verify', [TenantDomainController::class, 'verify'])->name('domains.verify');
             Route::post('/domains/{domain}/stub-verify', [TenantDomainController::class, 'stubVerify'])->name('domains.stub-verify');
+        });
+
+        Route::middleware('permission:integrations.api.view')->group(function () {
+            Route::get('/api-tokens', [TenantApiTokenController::class, 'index'])->name('api.tokens.index');
+        });
+        Route::middleware('permission:integrations.api.manage')->group(function () {
+            Route::post('/api-tokens', [TenantApiTokenController::class, 'store'])->name('api.tokens.store');
+            Route::delete('/api-tokens/{tokenId}', [TenantApiTokenController::class, 'destroy'])->name('api.tokens.destroy');
+        });
+
+        Route::middleware('permission:integrations.webhooks.view')->group(function () {
+            Route::get('/webhooks', [TenantWebhookController::class, 'index'])->name('webhooks.index');
+        });
+        Route::middleware('permission:integrations.webhooks.manage')->group(function () {
+            Route::post('/webhooks', [TenantWebhookController::class, 'store'])->name('webhooks.store');
+            Route::post('/webhooks/{webhook}/test', [TenantWebhookController::class, 'test'])->name('webhooks.test');
+            Route::delete('/webhooks/{webhook}', [TenantWebhookController::class, 'destroy'])->name('webhooks.destroy');
+        });
+
+        Route::middleware('permission:settings.appearance.view')->group(function () {
+            Route::get('/appearance', [TenantAppearanceController::class, 'edit'])->name('appearance.edit');
+        });
+        Route::middleware('permission:settings.appearance.update')->group(function () {
+            Route::put('/appearance', [TenantAppearanceController::class, 'update'])->name('appearance.update');
         });
 
         Route::middleware('permission:settings.subscription.view')->group(function () {
