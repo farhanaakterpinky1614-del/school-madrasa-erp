@@ -71,6 +71,10 @@ use App\Http\Controllers\Tenant\Academics\HomeworkController as TenantHomeworkCo
 use App\Http\Controllers\Tenant\Academics\ClassworkController as TenantClassworkController;
 use App\Http\Controllers\Tenant\Academics\LearningMaterialController as TenantLearningMaterialController;
 use App\Http\Controllers\Tenant\Academics\AcademicReportController as TenantAcademicReportController;
+use App\Http\Controllers\Tenant\Attendance\DailyAttendanceController as TenantDailyAttendanceController;
+use App\Http\Controllers\Tenant\Attendance\PeriodAttendanceController as TenantPeriodAttendanceController;
+use App\Http\Controllers\Tenant\Attendance\AttendanceReportController as TenantAttendanceReportController;
+use App\Http\Controllers\Tenant\Attendance\AttendanceQrController as TenantAttendanceQrController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -587,6 +591,27 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
 
         Route::middleware('permission:academics.report.view')->group(function () {
             Route::get('/academic-reports', [TenantAcademicReportController::class, 'index'])->name('academic-reports.index');
+        });
+
+        // Attendance (Phase 08)
+        Route::middleware('permission:attendance.daily.view')->group(function () {
+            Route::get('/attendance/daily', [TenantDailyAttendanceController::class, 'index'])->name('attendance.daily.index');
+        });
+        Route::middleware('permission:attendance.daily.manage')->group(function () {
+            Route::post('/attendance/daily', [TenantDailyAttendanceController::class, 'store'])->name('attendance.daily.store');
+        });
+        Route::middleware('permission:attendance.period.view')->group(function () {
+            Route::get('/attendance/period', [TenantPeriodAttendanceController::class, 'index'])->name('attendance.period.index');
+        });
+        Route::middleware('permission:attendance.period.manage')->group(function () {
+            Route::post('/attendance/period', [TenantPeriodAttendanceController::class, 'store'])->name('attendance.period.store');
+        });
+        Route::middleware('permission:attendance.report.view')->group(function () {
+            Route::get('/attendance/reports', [TenantAttendanceReportController::class, 'index'])->name('attendance.reports.index');
+        });
+        Route::middleware('permission:attendance.qr.manage')->group(function () {
+            Route::get('/attendance/qr', [TenantAttendanceQrController::class, 'index'])->name('attendance.qr.index');
+            Route::post('/attendance/qr', [TenantAttendanceQrController::class, 'store'])->name('attendance.qr.store');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
