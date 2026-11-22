@@ -100,6 +100,12 @@ use App\Http\Controllers\Tenant\Library\LibraryIssueController as TenantLibraryI
 use App\Http\Controllers\Tenant\Library\LibraryFineController as TenantLibraryFineController;
 use App\Http\Controllers\Tenant\Library\LibraryReportController as TenantLibraryReportController;
 use App\Http\Controllers\Tenant\Library\LibrarySettingController as TenantLibrarySettingController;
+use App\Http\Controllers\Tenant\Transport\VehicleController as TenantVehicleController;
+use App\Http\Controllers\Tenant\Transport\TransportRouteController as TenantTransportRouteController;
+use App\Http\Controllers\Tenant\Transport\TransportAssignmentController as TenantTransportAssignmentController;
+use App\Http\Controllers\Tenant\Hostel\HostelController as TenantHostelController;
+use App\Http\Controllers\Tenant\Hostel\HostelRoomController as TenantHostelRoomController;
+use App\Http\Controllers\Tenant\Hostel\HostelAllocationController as TenantHostelAllocationController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -835,6 +841,60 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         Route::middleware('permission:library.settings.manage')->group(function () {
             Route::get('/library/settings', [TenantLibrarySettingController::class, 'edit'])->name('library.settings.edit');
             Route::put('/library/settings', [TenantLibrarySettingController::class, 'update'])->name('library.settings.update');
+        });
+
+        // Phase 13 — Transport & hostel
+        Route::middleware('permission:transport.vehicle.view')->group(function () {
+            Route::get('/transport/vehicles', [TenantVehicleController::class, 'index'])->name('transport.vehicles.index');
+        });
+        Route::middleware('permission:transport.vehicle.manage')->group(function () {
+            Route::post('/transport/vehicles', [TenantVehicleController::class, 'store'])->name('transport.vehicles.store');
+            Route::put('/transport/vehicles/{vehicle}', [TenantVehicleController::class, 'update'])->name('transport.vehicles.update');
+            Route::delete('/transport/vehicles/{vehicle}', [TenantVehicleController::class, 'destroy'])->name('transport.vehicles.destroy');
+        });
+
+        Route::middleware('permission:transport.route.view')->group(function () {
+            Route::get('/transport/routes', [TenantTransportRouteController::class, 'index'])->name('transport.routes.index');
+        });
+        Route::middleware('permission:transport.route.manage')->group(function () {
+            Route::post('/transport/routes', [TenantTransportRouteController::class, 'store'])->name('transport.routes.store');
+            Route::put('/transport/routes/{transportRoute}', [TenantTransportRouteController::class, 'update'])->name('transport.routes.update');
+            Route::delete('/transport/routes/{transportRoute}', [TenantTransportRouteController::class, 'destroy'])->name('transport.routes.destroy');
+        });
+
+        Route::middleware('permission:transport.assignment.view')->group(function () {
+            Route::get('/transport/assignments', [TenantTransportAssignmentController::class, 'index'])->name('transport.assignments.index');
+        });
+        Route::middleware('permission:transport.assignment.manage')->group(function () {
+            Route::post('/transport/assignments', [TenantTransportAssignmentController::class, 'store'])->name('transport.assignments.store');
+            Route::post('/transport/assignments/{assignment}/deactivate', [TenantTransportAssignmentController::class, 'deactivate'])->name('transport.assignments.deactivate');
+        });
+
+        Route::middleware('permission:hostel.hostel.view')->group(function () {
+            Route::get('/hostel/hostels', [TenantHostelController::class, 'index'])->name('hostel.hostels.index');
+        });
+        Route::middleware('permission:hostel.hostel.manage')->group(function () {
+            Route::post('/hostel/hostels', [TenantHostelController::class, 'store'])->name('hostel.hostels.store');
+            Route::put('/hostel/hostels/{hostel}', [TenantHostelController::class, 'update'])->name('hostel.hostels.update');
+            Route::delete('/hostel/hostels/{hostel}', [TenantHostelController::class, 'destroy'])->name('hostel.hostels.destroy');
+        });
+
+        Route::middleware('permission:hostel.room.view')->group(function () {
+            Route::get('/hostel/rooms', [TenantHostelRoomController::class, 'index'])->name('hostel.rooms.index');
+        });
+        Route::middleware('permission:hostel.room.manage')->group(function () {
+            Route::post('/hostel/rooms', [TenantHostelRoomController::class, 'store'])->name('hostel.rooms.store');
+            Route::put('/hostel/rooms/{hostelRoom}', [TenantHostelRoomController::class, 'update'])->name('hostel.rooms.update');
+            Route::delete('/hostel/rooms/{hostelRoom}', [TenantHostelRoomController::class, 'destroy'])->name('hostel.rooms.destroy');
+            Route::put('/hostel/beds/{bed}', [TenantHostelRoomController::class, 'updateBed'])->name('hostel.beds.update');
+        });
+
+        Route::middleware('permission:hostel.allocation.view')->group(function () {
+            Route::get('/hostel/allocations', [TenantHostelAllocationController::class, 'index'])->name('hostel.allocations.index');
+        });
+        Route::middleware('permission:hostel.allocation.manage')->group(function () {
+            Route::post('/hostel/allocations', [TenantHostelAllocationController::class, 'store'])->name('hostel.allocations.store');
+            Route::post('/hostel/allocations/{allocation}/checkout', [TenantHostelAllocationController::class, 'checkOut'])->name('hostel.allocations.checkout');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
