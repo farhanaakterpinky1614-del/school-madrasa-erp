@@ -2,7 +2,7 @@
 
 Multi-tenant education management SaaS for Bangladesh (general schools, colleges, Alia / Qawmi / Hifz Madrasas).
 
-**Phase 03 scope:** Authentication, RBAC & Security — Spatie teams RBAC, custom role builder, user/membership management, login history, audit logs, session revoke, password reset, rate limits. Academic modules remain later phases.
+**Current scope includes Phase 16 Hardening & Enterprise:** Sanctum API, webhooks, custom-domain DNS verify, plan quotas, security headers, premium UI pack hooks — on top of the modular multi-tenant ERP.
 
 ## Stack
 
@@ -97,9 +97,26 @@ Open `http://127.0.0.1:8000` — redirects to login.
 ### Tenancy hosts
 
 - Subdomain: `{slug}.{TENANCY_BASE_DOMAIN}` (default `localhost`)
-- Custom domain: stored on `tenant_domains` (Enterprise feature; DNS verify stubbed)
+- Custom domain: stored on `tenant_domains` (Enterprise; DNS TXT / HTTP verify via Domains UI)
 - Platform: `/platform` path (and optional `admin.{base}`)
 - Local fallback: on central hosts, authenticated tenant users bind via `tenant_id` when `TENANCY_USER_FALLBACK=true`
+
+## Sanctum API (Phase 16)
+
+Bearer tokens from `/app/api-tokens` (plan feature `api_access`, Professional+).
+
+| Method | Path |
+|--------|------|
+| GET/POST | `/api/v1/students` |
+| GET/PATCH | `/api/v1/students/{id}` |
+| GET/POST | `/api/v1/attendance` (+ `/summary`) |
+| GET | `/api/v1/fees/summary`, `/api/v1/fees/invoices` |
+| POST | `/api/v1/fees/invoices/{id}/payments` |
+| GET/POST/DELETE | `/api/v1/tokens` |
+
+Tenant scope is bound from the token owner. See `routes/api.php` for the full catalogue.
+
+**Seeded demo tenant:** `admin@demo-school.test` / `password123` → `/app`
 
 ## Design system
 

@@ -10,12 +10,30 @@
 @endsection
 
 @section('content')
+    @if ($errors->has('quota'))
+        <div class="mb-4 rounded-2xl border border-rose-300/60 bg-rose-50/80 px-4 py-3 text-sm text-rose-800 dark:border-rose-500/30 dark:bg-rose-950/30 dark:text-rose-100">
+            {{ $errors->first('quota') }}
+        </div>
+    @endif
+
     <div class="mb-6 grid gap-4 sm:grid-cols-3">
         @foreach ($usage as $key => $row)
-            <div class="sme-kpi sme-kpi-indigo px-4 py-4 ps-5">
+            <div @class([
+                'sme-kpi px-4 py-4 ps-5',
+                'sme-kpi-indigo' => ! ($row['exceeded'] ?? false),
+                'border border-rose-300/50' => $row['exceeded'] ?? false,
+            ])>
                 <p class="text-xs font-semibold uppercase tracking-wide text-muted">{{ __('ui.usage_'.$key) }}</p>
                 <p class="mt-2 text-2xl font-semibold">{{ number_format($row['current']) }}</p>
-                <p class="mt-1 text-xs text-muted">{{ __('ui.limit') }}: {{ $row['limit'] === null ? '∞' : number_format($row['limit']) }}</p>
+                <p class="mt-1 text-xs text-muted">
+                    {{ __('ui.limit') }}: {{ $row['limit'] === null ? '∞' : number_format($row['limit']) }}
+                    @if ($row['remaining'] !== null)
+                        · {{ __('ui.usage_remaining') }}: {{ number_format($row['remaining']) }}
+                    @endif
+                </p>
+                @if ($row['exceeded'] ?? false)
+                    <p class="mt-2 text-xs font-semibold text-rose-600">{{ __('ui.usage_exceeded_badge') }}</p>
+                @endif
             </div>
         @endforeach
     </div>

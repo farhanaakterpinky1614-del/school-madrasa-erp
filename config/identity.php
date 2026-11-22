@@ -24,6 +24,7 @@ return [
     'rate_limits' => [
         'login' => (int) env('SME_RATE_LOGIN', 5), // per minute per IP+email
         'password_reset' => (int) env('SME_RATE_RESET', 3),
+        'api' => (int) env('SME_RATE_API', 60), // Sanctum API per user/IP
     ],
 
     /*
@@ -244,6 +245,14 @@ return [
         'reports.certificates.issue',
         'reports.export.view',
         'reports.export.create',
+
+        // Hardening & Enterprise (Phase 16)
+        'integrations.api.view',
+        'integrations.api.manage',
+        'integrations.webhooks.view',
+        'integrations.webhooks.manage',
+        'settings.appearance.view',
+        'settings.appearance.update',
     ],
 
     /*
@@ -299,6 +308,9 @@ return [
             'settings.subscription.view',
             'settings.modules.view',
             'settings.usage.view',
+            'settings.appearance.view',
+            'integrations.api.view',
+            'integrations.webhooks.view',
             'branches.branch.view',
             'branches.branch.manage',
             'academics.department.view',

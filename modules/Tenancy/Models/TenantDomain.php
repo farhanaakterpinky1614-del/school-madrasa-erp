@@ -44,8 +44,7 @@ class TenantDomain extends Model
     }
 
     /**
-     * Stub for Phase 15 DNS/HTTP verification.
-     * TODO(Phase 15): verify DNS TXT or HTTP challenge before marking custom domains verified.
+     * Begin DNS TXT / HTTP challenge verification (Phase 16).
      */
     public function beginVerification(): void
     {
@@ -57,14 +56,21 @@ class TenantDomain extends Model
     }
 
     /**
-     * Dev/local stub activation — production must complete DNS verification first.
-     * TODO(Phase 15): remove stub path; only activate after real verification.
+     * Mark verified after DomainVerificationService succeeds.
      */
-    public function markVerifiedStub(): void
+    public function markVerified(): void
     {
         $this->forceFill([
             'verification_status' => self::STATUS_VERIFIED,
             'verified_at' => now(),
         ])->save();
+    }
+
+    /**
+     * @deprecated Use DomainVerificationService::verify() — kept for backward-compatible routes.
+     */
+    public function markVerifiedStub(): void
+    {
+        $this->markVerified();
     }
 }

@@ -26,6 +26,8 @@ class ModuleRegistrySeeder extends Seeder
             ['key' => 'transport', 'name' => 'Transport', 'feature_key' => 'module_transport', 'is_core' => false, 'sort_order' => 23],
             ['key' => 'api', 'name' => 'API access', 'feature_key' => 'api_access', 'is_core' => false, 'sort_order' => 30],
             ['key' => 'custom_domain', 'name' => 'Custom domain', 'feature_key' => 'custom_domain', 'is_core' => false, 'sort_order' => 31],
+            ['key' => 'webhooks', 'name' => 'Webhooks', 'feature_key' => 'webhooks', 'is_core' => false, 'sort_order' => 32],
+            ['key' => 'premium_ui', 'name' => 'Premium UI packs', 'feature_key' => 'premium_ui_packs', 'is_core' => false, 'sort_order' => 33],
         ];
 
         foreach ($modules as $module) {

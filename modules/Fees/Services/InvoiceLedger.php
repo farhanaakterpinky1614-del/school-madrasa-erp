@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\DB;
 use Modules\Fees\Models\FeeDiscount;
 use Modules\Fees\Models\FeeInvoice;
 use Modules\Fees\Models\FeePayment;
+use Modules\Integrations\Models\WebhookSubscription;
+use Modules\Integrations\Services\WebhookDispatcher;
+use Modules\Tenancy\Models\Tenant;
 use Modules\Fees\Models\FeeStructure;
 use Modules\Fees\Support\Money;
 use Modules\Students\Models\Student;
@@ -185,6 +188,22 @@ class InvoiceLedger
 
             return $payment;
         });
+
+        $freshInvoice = $invoice->fresh();
+        $tenant = Tenant::query()->find($payment->tenant_id);
+        if ($tenant) {
+            app(WebhookDispatcher::class)->dispatch($tenant, WebhookSubscription::EVENT_FEE_PAID, [
+                'payment_id' => $payment->id,
+                'payment_number' => $payment->payment_number,
+                'invoice_id' => $freshInvoice?->id,
+                'invoice_number' => $freshInvoice?->invoice_number,
+                'student_id' => $freshInvoice?->student_id,
+                'amount' => (float) $payment->amount,
+                'method' => $payment->method,
+                'invoice_status' => $freshInvoice?->status,
+                'balance' => (float) ($freshInvoice?->balance ?? 0),
+            ]);
+        }
 
         return $payment;
     }

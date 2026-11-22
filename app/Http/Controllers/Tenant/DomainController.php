@@ -9,12 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Modules\Platform\Services\FeatureAccess;
 use Modules\Tenancy\Models\TenantDomain;
+use Modules\Tenancy\Services\DomainVerificationService;
 use Modules\Tenancy\Services\TenantResolver;
 
 class DomainController extends Controller
 {
-    public function index(CurrentTenant $currentTenant, FeatureAccess $features): View
-    {
+    public function index(
+        CurrentTenant $currentTenant,
+        FeatureAccess $features,
+        DomainVerificationService $verification,
+    ): View {
         $tenant = $currentTenant->require();
         $domains = TenantDomain::query()->orderByDesc('is_primary')->orderBy('host')->get();
 
@@ -22,6 +26,7 @@ class DomainController extends Controller
             'tenant' => $tenant,
             'domains' => $domains,
             'canCustomDomain' => $features->enabled($tenant, 'custom_domain'),
+            'verification' => $verification,
         ]);
     }
 
@@ -50,14 +55,17 @@ class DomainController extends Controller
             'verification_status' => TenantDomain::STATUS_PENDING,
         ]);
 
-        // TODO(Phase 15): kick off real DNS TXT / HTTP verification instead of stub.
         $domain->beginVerification();
 
-        return back()->with('status', 'Custom domain added (verification pending — DNS verify stubbed).');
+        return back()->with('status', 'Custom domain added. Add the DNS TXT record, then run Verify.');
     }
 
-    public function stubVerify(TenantDomain $domain, CurrentTenant $currentTenant, FeatureAccess $features): RedirectResponse
-    {
+    public function verify(
+        TenantDomain $domain,
+        CurrentTenant $currentTenant,
+        FeatureAccess $features,
+        DomainVerificationService $verification,
+    ): RedirectResponse {
         $tenant = $currentTenant->require();
 
         abort_unless((int) $domain->tenant_id === (int) $tenant->id, 404);
@@ -66,9 +74,24 @@ class DomainController extends Controller
             abort(403);
         }
 
-        // TODO(Phase 15): replace with verified DNS/HTTP challenge.
-        $domain->markVerifiedStub();
+        $result = $verification->verify($domain);
 
-        return back()->with('status', 'Domain marked verified (stub). Full DNS verification ships later.');
+        if ($result['verified']) {
+            return back()->with('status', 'Domain verified via '.$result['method'].'.');
+        }
+
+        return back()->withErrors(['host' => 'Verification failed: '.$result['detail']]);
+    }
+
+    /**
+     * @deprecated Prefer verify() — kept so old bookmarks/tests keep working.
+     */
+    public function stubVerify(
+        TenantDomain $domain,
+        CurrentTenant $currentTenant,
+        FeatureAccess $features,
+        DomainVerificationService $verification,
+    ): RedirectResponse {
+        return $this->verify($domain, $currentTenant, $features, $verification);
     }
 }

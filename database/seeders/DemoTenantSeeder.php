@@ -15,6 +15,7 @@ use Modules\Students\Services\DemoStudentProvisioner;
 use Modules\Tenancy\Services\TenantRegistrar;
 use Modules\Transport\Services\DemoTransportHostelProvisioner;
 use Modules\Communications\Services\DemoCommunicationsProvisioner;
+use Modules\Integrations\Services\DemoHardeningProvisioner;
 use Modules\Reports\Services\DemoReportsProvisioner;
 
 class DemoTenantSeeder extends Seeder
@@ -56,5 +57,6 @@ class DemoTenantSeeder extends Seeder
         app(DemoTransportHostelProvisioner::class)->provision($registered['tenant']);
         app(DemoCommunicationsProvisioner::class)->provision($registered['tenant']);
         app(DemoReportsProvisioner::class)->provision($registered['tenant']);
+        app(DemoHardeningProvisioner::class)->provision($registered['tenant']);
     }
 }
