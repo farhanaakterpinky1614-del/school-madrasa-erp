@@ -199,6 +199,18 @@ return [
         'finance.expense_category.manage',
         'finance.report.view',
 
+        // Library (Phase 12)
+        'library.book.view',
+        'library.book.manage',
+        'library.copy.view',
+        'library.copy.manage',
+        'library.issue.view',
+        'library.issue.manage',
+        'library.fine.view',
+        'library.fine.manage',
+        'library.report.view',
+        'library.settings.manage',
+
         // Placeholder permissions used by role templates (enforced when modules ship)
         'reports.export.create',
     ],
@@ -333,6 +345,11 @@ return [
             'fees.receipt.export',
             'finance.expense.view',
             'finance.report.view',
+            'library.book.view',
+            'library.copy.view',
+            'library.issue.view',
+            'library.fine.view',
+            'library.report.view',
             'reports.export.create',
         ],
         'Academic Officer' => [
@@ -494,6 +511,17 @@ return [
         ],
         'Librarian' => [
             'students.student.view',
+            'library.book.view',
+            'library.book.manage',
+            'library.copy.view',
+            'library.copy.manage',
+            'library.issue.view',
+            'library.issue.manage',
+            'library.fine.view',
+            'library.fine.manage',
+            'library.report.view',
+            'library.settings.manage',
+            'reports.export.create',
         ],
         'Receptionist' => [
             'students.student.view',

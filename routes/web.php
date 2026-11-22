@@ -94,6 +94,12 @@ use App\Http\Controllers\Tenant\Fees\FeeDiscountController as TenantFeeDiscountC
 use App\Http\Controllers\Tenant\Finance\ExpenseCategoryController as TenantExpenseCategoryController;
 use App\Http\Controllers\Tenant\Finance\ExpenseController as TenantExpenseController;
 use App\Http\Controllers\Tenant\Finance\ExpenseReportController as TenantExpenseReportController;
+use App\Http\Controllers\Tenant\Library\LibraryBookController as TenantLibraryBookController;
+use App\Http\Controllers\Tenant\Library\LibraryCopyController as TenantLibraryCopyController;
+use App\Http\Controllers\Tenant\Library\LibraryIssueController as TenantLibraryIssueController;
+use App\Http\Controllers\Tenant\Library\LibraryFineController as TenantLibraryFineController;
+use App\Http\Controllers\Tenant\Library\LibraryReportController as TenantLibraryReportController;
+use App\Http\Controllers\Tenant\Library\LibrarySettingController as TenantLibrarySettingController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -784,6 +790,51 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
 
         Route::middleware('permission:finance.report.view')->group(function () {
             Route::get('/finance/expense-reports', [TenantExpenseReportController::class, 'index'])->name('finance.reports.index');
+        });
+
+        // Phase 12 — Library
+        Route::middleware('permission:library.book.view')->group(function () {
+            Route::get('/library/books', [TenantLibraryBookController::class, 'index'])->name('library.books.index');
+        });
+        Route::middleware('permission:library.book.manage')->group(function () {
+            Route::post('/library/books', [TenantLibraryBookController::class, 'store'])->name('library.books.store');
+            Route::put('/library/books/{book}', [TenantLibraryBookController::class, 'update'])->name('library.books.update');
+            Route::delete('/library/books/{book}', [TenantLibraryBookController::class, 'destroy'])->name('library.books.destroy');
+        });
+
+        Route::middleware('permission:library.copy.view')->group(function () {
+            Route::get('/library/copies', [TenantLibraryCopyController::class, 'index'])->name('library.copies.index');
+        });
+        Route::middleware('permission:library.copy.manage')->group(function () {
+            Route::post('/library/copies', [TenantLibraryCopyController::class, 'store'])->name('library.copies.store');
+            Route::put('/library/copies/{copy}', [TenantLibraryCopyController::class, 'update'])->name('library.copies.update');
+            Route::delete('/library/copies/{copy}', [TenantLibraryCopyController::class, 'destroy'])->name('library.copies.destroy');
+        });
+
+        Route::middleware('permission:library.issue.view')->group(function () {
+            Route::get('/library/issues', [TenantLibraryIssueController::class, 'index'])->name('library.issues.index');
+        });
+        Route::middleware('permission:library.issue.manage')->group(function () {
+            Route::post('/library/issues', [TenantLibraryIssueController::class, 'store'])->name('library.issues.store');
+            Route::post('/library/issues/{issue}/return', [TenantLibraryIssueController::class, 'returnCopy'])->name('library.issues.return');
+        });
+
+        Route::middleware('permission:library.fine.view')->group(function () {
+            Route::get('/library/fines', [TenantLibraryFineController::class, 'index'])->name('library.fines.index');
+        });
+        Route::middleware('permission:library.fine.manage')->group(function () {
+            Route::post('/library/issues/{issue}/fines/recalculate', [TenantLibraryFineController::class, 'recalculate'])->name('library.fines.recalculate');
+            Route::post('/library/fines/{fine}/paid', [TenantLibraryFineController::class, 'markPaid'])->name('library.fines.paid');
+            Route::post('/library/fines/{fine}/waived', [TenantLibraryFineController::class, 'markWaived'])->name('library.fines.waived');
+        });
+
+        Route::middleware('permission:library.report.view')->group(function () {
+            Route::get('/library/reports', [TenantLibraryReportController::class, 'index'])->name('library.reports.index');
+        });
+
+        Route::middleware('permission:library.settings.manage')->group(function () {
+            Route::get('/library/settings', [TenantLibrarySettingController::class, 'edit'])->name('library.settings.edit');
+            Route::put('/library/settings', [TenantLibrarySettingController::class, 'update'])->name('library.settings.update');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
