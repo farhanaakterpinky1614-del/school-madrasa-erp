@@ -112,6 +112,12 @@ use App\Http\Controllers\Tenant\Communications\NotificationSendController as Ten
 use App\Http\Controllers\Tenant\Communications\DeliveryLogController as TenantDeliveryLogController;
 use App\Http\Controllers\Tenant\Communications\CommunicationSettingController as TenantCommunicationSettingController;
 use App\Http\Controllers\Tenant\Communications\InboxController as TenantInboxController;
+use App\Http\Controllers\Tenant\Reports\ReportHubController as TenantReportHubController;
+use App\Http\Controllers\Tenant\Reports\StudentIdCardBatchController as TenantStudentIdCardBatchController;
+use App\Http\Controllers\Tenant\Reports\StaffIdCardController as TenantStaffIdCardController;
+use App\Http\Controllers\Tenant\Reports\CertificateTemplateController as TenantCertificateTemplateController;
+use App\Http\Controllers\Tenant\Reports\CertificateIssueController as TenantCertificateIssueController;
+use App\Http\Controllers\Tenant\Reports\ReportExportController as TenantReportExportController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -940,6 +946,42 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         Route::middleware('permission:communications.settings.manage')->group(function () {
             Route::get('/communications/settings', [TenantCommunicationSettingController::class, 'edit'])->name('communications.settings.edit');
             Route::put('/communications/settings', [TenantCommunicationSettingController::class, 'update'])->name('communications.settings.update');
+        });
+
+        // Phase 15 — Reports & credentials
+        Route::middleware('permission:reports.hub.view')->group(function () {
+            Route::get('/reports', [TenantReportHubController::class, 'index'])->name('reports.index');
+        });
+
+        Route::middleware('permission:reports.id_cards.view')->group(function () {
+            Route::get('/reports/id-cards/students', [TenantStudentIdCardBatchController::class, 'index'])->name('reports.id-cards.students.index');
+            Route::get('/reports/id-cards/staff', [TenantStaffIdCardController::class, 'index'])->name('reports.id-cards.staff.index');
+            Route::get('/reports/id-cards/staff/{staff}', [TenantStaffIdCardController::class, 'show'])->name('reports.id-cards.staff.show');
+        });
+        Route::middleware('permission:reports.id_cards.print')->group(function () {
+            Route::get('/reports/id-cards/students/print', [TenantStudentIdCardBatchController::class, 'print'])->name('reports.id-cards.students.print');
+        });
+
+        Route::middleware('permission:reports.certificates.view')->group(function () {
+            Route::get('/reports/certificates/templates', [TenantCertificateTemplateController::class, 'index'])->name('reports.certificates.templates.index');
+            Route::get('/reports/certificates/issues', [TenantCertificateIssueController::class, 'index'])->name('reports.certificates.issues.index');
+            Route::get('/reports/certificates/issues/{issue}/pdf', [TenantCertificateIssueController::class, 'pdf'])->name('reports.certificates.issues.pdf');
+        });
+        Route::middleware('permission:reports.certificates.manage')->group(function () {
+            Route::post('/reports/certificates/templates', [TenantCertificateTemplateController::class, 'store'])->name('reports.certificates.templates.store');
+            Route::put('/reports/certificates/templates/{template}', [TenantCertificateTemplateController::class, 'update'])->name('reports.certificates.templates.update');
+            Route::delete('/reports/certificates/templates/{template}', [TenantCertificateTemplateController::class, 'destroy'])->name('reports.certificates.templates.destroy');
+        });
+        Route::middleware('permission:reports.certificates.issue')->group(function () {
+            Route::post('/reports/certificates/issues', [TenantCertificateIssueController::class, 'store'])->name('reports.certificates.issues.store');
+        });
+
+        Route::middleware('permission:reports.export.view')->group(function () {
+            Route::get('/reports/exports', [TenantReportExportController::class, 'index'])->name('reports.exports.index');
+            Route::get('/reports/exports/{export}/download', [TenantReportExportController::class, 'download'])->name('reports.exports.download');
+        });
+        Route::middleware('permission:reports.export.create')->group(function () {
+            Route::post('/reports/exports', [TenantReportExportController::class, 'store'])->name('reports.exports.store');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
