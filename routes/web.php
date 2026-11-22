@@ -106,6 +106,12 @@ use App\Http\Controllers\Tenant\Transport\TransportAssignmentController as Tenan
 use App\Http\Controllers\Tenant\Hostel\HostelController as TenantHostelController;
 use App\Http\Controllers\Tenant\Hostel\HostelRoomController as TenantHostelRoomController;
 use App\Http\Controllers\Tenant\Hostel\HostelAllocationController as TenantHostelAllocationController;
+use App\Http\Controllers\Tenant\Communications\AnnouncementController as TenantAnnouncementController;
+use App\Http\Controllers\Tenant\Communications\NotificationTemplateController as TenantNotificationTemplateController;
+use App\Http\Controllers\Tenant\Communications\NotificationSendController as TenantNotificationSendController;
+use App\Http\Controllers\Tenant\Communications\DeliveryLogController as TenantDeliveryLogController;
+use App\Http\Controllers\Tenant\Communications\CommunicationSettingController as TenantCommunicationSettingController;
+use App\Http\Controllers\Tenant\Communications\InboxController as TenantInboxController;
 use App\Http\Controllers\PublicAdmissionController;
 use App\Livewire\Demo\UiKitchenSink;
 use Illuminate\Support\Facades\Route;
@@ -895,6 +901,45 @@ Route::middleware(['auth', 'tenant.member', 'tenant.context'])
         Route::middleware('permission:hostel.allocation.manage')->group(function () {
             Route::post('/hostel/allocations', [TenantHostelAllocationController::class, 'store'])->name('hostel.allocations.store');
             Route::post('/hostel/allocations/{allocation}/checkout', [TenantHostelAllocationController::class, 'checkOut'])->name('hostel.allocations.checkout');
+        });
+
+        // Phase 14 — Communications
+        Route::middleware('permission:communications.inbox.view')->group(function () {
+            Route::get('/communications/inbox', [TenantInboxController::class, 'index'])->name('communications.inbox.index');
+        });
+
+        Route::middleware('permission:communications.announcement.view')->group(function () {
+            Route::get('/communications/announcements', [TenantAnnouncementController::class, 'index'])->name('communications.announcements.index');
+        });
+        Route::middleware('permission:communications.announcement.manage')->group(function () {
+            Route::post('/communications/announcements', [TenantAnnouncementController::class, 'store'])->name('communications.announcements.store');
+            Route::put('/communications/announcements/{announcement}', [TenantAnnouncementController::class, 'update'])->name('communications.announcements.update');
+            Route::delete('/communications/announcements/{announcement}', [TenantAnnouncementController::class, 'destroy'])->name('communications.announcements.destroy');
+            Route::post('/communications/announcements/{announcement}/publish', [TenantAnnouncementController::class, 'publish'])->name('communications.announcements.publish');
+            Route::post('/communications/announcements/{announcement}/unpublish', [TenantAnnouncementController::class, 'unpublish'])->name('communications.announcements.unpublish');
+        });
+
+        Route::middleware('permission:communications.template.view')->group(function () {
+            Route::get('/communications/templates', [TenantNotificationTemplateController::class, 'index'])->name('communications.templates.index');
+        });
+        Route::middleware('permission:communications.template.manage')->group(function () {
+            Route::post('/communications/templates', [TenantNotificationTemplateController::class, 'store'])->name('communications.templates.store');
+            Route::put('/communications/templates/{template}', [TenantNotificationTemplateController::class, 'update'])->name('communications.templates.update');
+            Route::delete('/communications/templates/{template}', [TenantNotificationTemplateController::class, 'destroy'])->name('communications.templates.destroy');
+        });
+
+        Route::middleware('permission:communications.send.manage')->group(function () {
+            Route::get('/communications/send', [TenantNotificationSendController::class, 'create'])->name('communications.send.create');
+            Route::post('/communications/send', [TenantNotificationSendController::class, 'store'])->name('communications.send.store');
+        });
+
+        Route::middleware('permission:communications.log.view')->group(function () {
+            Route::get('/communications/logs', [TenantDeliveryLogController::class, 'index'])->name('communications.logs.index');
+        });
+
+        Route::middleware('permission:communications.settings.manage')->group(function () {
+            Route::get('/communications/settings', [TenantCommunicationSettingController::class, 'edit'])->name('communications.settings.edit');
+            Route::put('/communications/settings', [TenantCommunicationSettingController::class, 'update'])->name('communications.settings.update');
         });
 
         Route::middleware('permission:settings.domains.view')->group(function () {
